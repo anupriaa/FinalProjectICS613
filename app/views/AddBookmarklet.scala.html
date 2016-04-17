@@ -1,0 +1,63 @@
+@(page: String, isLoggedIn: Boolean, userInfo: UserInfo)
+
+@Main(page, isLoggedIn, userInfo) {
+    <div class="container">
+     <div class="row welcome">
+      <div class="md-col-4"></div>
+        <div class="md-col-4">
+         <h1>Add the Bookmarklet</h1>
+        <p class="bookmarkletText">Our bookmarklet lets you quickly add links from any web page. <br/>Just make sure your bookmarks toolbar is visible, and then drag the below link. </p>
+       <a class="bookmarkletLinkt" href='javascript: (function(e, t) {
+        var n = e.document;
+        setTimeout(function() {
+        function a(e) {
+        if (e.data === "destroy_bookmarklet") {
+        var r = n.getElementById(t);
+        if (r) {
+        n.body.removeChild(r);
+        r = null
+        }
+        }
+        }
+        var t = "Taggit_bookmarklet_iframe",
+        r = n.getElementById(t);
+        if (r) {
+        return
+        }
+        var i = "https://www.taggit.website/Bookmarklet?",
+        s = n.createElement("iframe");
+        s.id = t;
+        s.src = i + "url=" +
+        encodeURIComponent(e.location.href) +
+        "&bk=1";
+
+        s.style.position = "fixed";
+        s.style.top = "0";
+        s.style.left = "0";
+        s.style.height = "50%";
+        s.style.width = "50%";
+        s.style.zIndex = "16777270";
+        s.style.border = "none";
+        s.style.visibility = "hidden";
+        s.setAttribute("allowtransparency", "true");
+        s.style.backgroundColor = "transparent";
+        s.onload = function() {
+        this.style.visibility = "none"
+        };
+        n.body.appendChild(s);
+        var o = e.addEventListener ? "addEventListener" : "attachEvent";
+        var u = o == "attachEvent" ? "onmessage" : "message";
+        e[o](u, a, false)
+        }, 1)
+        })(window)'> Tag it!</a>
+       <p class="bookmarkletText">Done! Now just click 'Tag it!'’ any time you want to add a page.</p>
+        </div>
+      <div class="md-col-4"></div>
+     </div>
+        </div>
+}
+
+
+
+
+

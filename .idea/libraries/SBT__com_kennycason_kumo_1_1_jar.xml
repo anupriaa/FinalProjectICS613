@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="SBT: com.kennycason:kumo:1.1:jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.kennycason/kumo/jars/kumo-1.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,13 @@
+@(page: String, isLoggedIn: Boolean, userInfo: UserInfo)
+
+@import views.html.helper._
+
+@Main(page, isLoggedIn, userInfo) {
+    <div class="container">
+    @form(routes.Application.enterUrlTest(), 'class -> "form-horizontal formBody") {
+        @if(isLoggedIn) {
+            <h1>Successfully added</h1>
+        }
+    }
+    </div>
+}

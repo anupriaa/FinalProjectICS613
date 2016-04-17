@@ -1,0 +1,83 @@
+@*************************
+Simple Login template.
+
+Takes a reverse route, the email field, and the password field from a form.
+If form validation fails, then the fields will have Twitter Bootstrap error highlighting.
+Clients should set the "error" key in flash scope to provide feedback on errors.
+**************************@
+
+@(reverseRoute: play.api.mvc.Call, emailField: Field, passwordField: Field, confirmPasswordField: Field,
+        firstNameField: Field, lastNameField: Field)
+
+<div class="row">
+    <div class="col-sm-6">
+       @* <div class="panel panel-default">*@
+            @*<div class="panel-heading">*@
+
+            @*</div>*@
+            @*<div class="panel-body">*@
+                @helper.form(reverseRoute, 'role -> "form") {
+                    <fieldset>
+                        <div class="form-group @if(firstNameField.hasErrors) {has-error}" >
+                            <input
+                            id="@firstNameField.id"
+                            name="@firstNameField.name"
+                            value="@firstNameField.value.getOrElse("")"
+                            class="form-control"
+                            placeholder="First Name"
+                            type="text">
+                        </div>
+
+                        <div class="form-group @if(lastNameField.hasErrors) {has-error}" >
+                            <input
+                            id="@lastNameField.id"
+                            name="@lastNameField.name"
+                            value="@lastNameField.value.getOrElse("")"
+                            class="form-control"
+                            placeholder="Last Name"
+                            type="text">
+                        </div>
+
+                        <div class="form-group @if(emailField.hasErrors) {has-error}" >
+                            <input
+                            id="@emailField.id"
+                            name="@emailField.name"
+                            value="@emailField.value.getOrElse("")"
+                            class="form-control"
+                            placeholder="E-mail"
+                            type="email">
+                        </div>
+                        <div class="form-group @if(passwordField.hasErrors) {has-error}" >
+                            <input
+                            id="@passwordField.id"
+                            name="@passwordField.name"
+                            value="@passwordField.value.getOrElse("")"
+                            class="form-control"
+                            placeholder="Password"
+                            type="password">
+                        </div>
+                        <div class="form-group @if(confirmPasswordField.hasErrors) {has-error}" >
+                            <input
+                            id="@confirmPasswordField.id"
+                            name="@confirmPasswordField.name"
+                            value="@confirmPasswordField.value.getOrElse("")"
+                            class="form-control"
+                            placeholder="Confirm Password"
+                            type="password">
+                        </div>
+                        <input class="btn btn-default" type="submit" value="Signup">
+                    </fieldset>
+                }
+                <br/>
+                <br/>
+                @if(flash.size() > 0){
+                    <div class="alert-alert error text-danger">
+                    @for((key, value) <- flash){
+                        <strong>Error : </strong> @value<br />
+                    }
+                    </div>
+                }
+            @*</div>*@
+        @*</div>*@
+    </div>
+</div>

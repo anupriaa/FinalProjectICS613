@@ -1,0 +1,36 @@
+@(page: String, isLoggedIn: Boolean, userInfo: UserInfo,imageInfo : List[ImageInfo], isImageGalleryResult: Boolean )
+
+@import views.html.bootstrap3._
+@import views.html.helper._
+
+@Main(page, isLoggedIn, userInfo) {
+    <div class="container">
+        @if(isImageGalleryResult) {
+            @if(!imageInfo.isEmpty) {
+                <div class="row welcome">
+                    @for(imageInfo <- imageInfo) {
+                       <div class="col-md-4 ">
+                          <a class= "resultLink" href="@routes.Application.getGalleryImages(imageInfo.getImageId())" target="_blank">
+                            <img src="@routes.Application.getGalleryImages(imageInfo.getImageId())" alt="@imageInfo.getImageName()" style="width:150px;height:150px">
+                            <p>@imageInfo.getImageName()
+                            <!--button type="button" class="btn btn-default" aria-label="Delete"-->
+                                <a class="btn btn-default" href="" target="_blank">
+                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                </a>
+                            <!--/button-->
+                            </p>
+                          </a>
+                       </div>
+                    }
+                </div>
+            } else {
+                <div class="row welcome">
+                    <br/>
+                    <div class="col-md-11 col-md-offset-1">
+                        <p>@userInfo.getFirstName, you have not added any images yet.</p>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+}

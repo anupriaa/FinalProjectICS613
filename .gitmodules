@@ -1,0 +1,3 @@
+[submodule "lib/Taggit"]
+	path = lib/Taggit
+	url = https://github.com/anupriaa/Taggit

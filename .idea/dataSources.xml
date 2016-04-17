@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="3779799305">
+    <data-source source="LOCAL" name="PostgreSQL - taggit@localhost" uuid="00fe5e39-eb38-4dcb-bf14-1620438c066a">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/taggit</jdbc-url>
+      <libraries />
+    </data-source>
+  </component>
+</project>

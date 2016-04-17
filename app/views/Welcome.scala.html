@@ -1,0 +1,58 @@
+@(page: String, isLoggedIn: Boolean, userInfo: UserInfo)
+
+    @Main(page, isLoggedIn, userInfo) {
+        <div class="container-fluid welcome">
+            <div class="row">
+                <div class="col-md-12 hellotagit">
+                    <p align="center">Hello @userInfo.getFirstName,</p>
+                </div>
+                <br/>
+                <div class="row welcomtagit">
+                    <div class="col-md-12">
+                        <p align="center"><b>Welcome to Taggit!</b></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-9">
+                        <p>With Taggit you can save any website you like just with a click.</p>
+                            <p>Here are a few simple guidelines to use Taggit! effectively.</p>
+                    </div>
+                </div>
+                <div class="row guidelines">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6">
+                        <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+                        Add the <a class="link" href="@routes.Application.addBookmarklet()">bookmarklet</a>
+                        to your bookmarks.<br/>
+
+                        <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+                        Just click on the bookmarklet, When you want to save a website.<br/>
+
+                        <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+                        And later <a class="link" href="@routes.Application.search()">search</a>
+                        your added websites using keywords displayed in your personal keyword cloud.<br/>
+
+                        <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+                        Or you can take a look at all your links by going to <a class="link" href="@routes.Application.myLinks()">
+                        My Links</a>.<br/>
+
+                        <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+                        Any other question, read our <a class="link" href="@routes.Application.faq()">faqs</a>.<br/>
+                    </div>
+                    <div class="col-md-3"></div>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col-md-9 col-md-offset-3">
+                        <p>So without further delay, start using Taggit.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+
+

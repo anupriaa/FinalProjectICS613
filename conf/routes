@@ -1,0 +1,41 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET         /                      controllers.Application.index()
+GET         /Welcome               controllers.Application.welcome()
+GET         /Faq                   controllers.Application.faq()
+GET         /AddBookmarklet        controllers.Application.addBookmarklet()
+GET         /MyLinks               controllers.Application.myLinks()
+GET         /EnterUrl              controllers.Application.enterUrl()
+POST        /EnterUrl              controllers.Application.postEnterUrl()
+GET         /AddNote               controllers.Application.addNote()
+POST        /AddNote               controllers.Application.postAddNote()
+GET         /UploadImage           controllers.Application.uploadImage()
+POST        /UploadImage           controllers.Application.postUploadImage()
+GET         /ImageGallery          controllers.Application.getGalleryImageIds()
+# To get the images for gallery from database
+GET         /getGalleryImages      controllers.Application.getGalleryImages(id:Long)
+GET         /Search                controllers.Application.search()
+# To get the image from database
+GET         /getImage              controllers.Application.getImage()
+POST        /Search                controllers.Application.searchResult()
+#POST       /Home                controllers.Application.postEntry()
+# Login and authentication workflow
+GET         /login                 controllers.Application.login(msg: String?= "")
+POST        /login                 controllers.Application.postLogin()
+GET         /logout                controllers.Application.logout()
+
+GET         /signup                controllers.Application.signup()
+POST        /signup                controllers.Application.postSignup()
+
+GET         /Bookmarklet           controllers.Application.enterUrlTest()
+
+# Javascript routing
+#GET         /assets/javascripts/routes        controllers.Application.jsRoutes()
+
+
+# Map static resources from the /public folder to the /assets URL path
+GET         /assets/*file          controllers.Assets.at(path="/public", file)
+

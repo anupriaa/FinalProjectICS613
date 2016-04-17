@@ -14,7 +14,7 @@
                             <img src="@routes.Application.getGalleryImages(imageInfo.getImageId())" alt="@imageInfo.getImageName()" style="width:150px;height:150px">
                             <p>@imageInfo.getImageName()
                             <!--button type="button" class="btn btn-default" aria-label="Delete"-->
-                                <a class="btn btn-default" href="" target="_blank">
+                                <a class="btn btn-default" href="@routes.Application.deleteImages(imageInfo.getImageId)">
                                 <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                                 </a>
                             <!--/button-->

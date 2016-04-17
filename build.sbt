@@ -17,5 +17,6 @@ libraryDependencies ++= Seq(
   "org.postgresql" % "postgresql" % "9.3-1102-jdbc4",
   "org.mindrot" % "jbcrypt" % "0.3m",
   filters,
-  "com.kennycason" % "kumo" % "1.1"
+  "com.kennycason" % "kumo" % "1.1",
+  "com.google.code.gson" % "gson" % "2.6.2"
 )

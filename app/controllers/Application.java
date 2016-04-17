@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import models.EntryDB;
+import models.ImageEntry;
 import models.ImageInfo;
 import models.Keywords;
 import models.UrlEntry;
@@ -231,11 +232,25 @@ public class Application extends Controller {
           Secured.getUserInfo(ctx()), urlFormData));
     }
     else {
+      ArrayList<Long> entryIdList = new ArrayList<Long>();
       String url = Form.form().bindFromRequest().get("url");
       //Long userId = Long.parseLong(Form.form().bindFromRequest().get("UserId"));
       if (url != null) {
         System.out.println("url---" + url);
-        int rowCount = UrlInfo.find().select("url").where().ieq("url", url).findRowCount();
+        List<UrlEntry> idList = UrlEntry.find()
+            .select("entryId")
+            .where()
+            .eq("email", Secured.getUser(ctx()))
+            .findList();
+        for (UrlEntry entry : idList) {
+          entryIdList.add(entry.getEntryId());
+        }
+        int rowCount = UrlInfo.find()
+            .select("url")
+            .where()
+            .ieq("url", url)
+            .in("urlEntryId", entryIdList)
+            .findRowCount();
         System.out.println("rowcount== " + rowCount);
         if (rowCount == 0) {
           //call class that captures data and feeds it to db.
@@ -420,7 +435,7 @@ public class Application extends Controller {
    */
   @Security.Authenticated(Secured.class)
   public static Result getGalleryImageIds() {
-	  System.out.println("Inside getGallleryImages");
+	  System.out.println("Inside getGallleryImages  Id");
 	  List<ImageInfo> imageIdList = new ArrayList<ImageInfo>();
     imageIdList = SearchImages.searchAllImages();
       if(!imageIdList.isEmpty())
@@ -446,6 +461,25 @@ public class Application extends Controller {
     }
 
     return ok(images.getImage()).as("image");
+  }
+  /**
+   * deletes the selected image and refreshes the page.
+   * @param id Id of the selected image.
+   */
+  @Security.Authenticated(Secured.class)
+  public static Result deleteImages(long id){
+    System.out.println("Inside delete---" + id);
+    ImageInfo.find().ref(id).delete();
+    ImageEntry.find().ref(id).delete();
+    //getGalleryImageIds();
+    System.out.println("Inside getGallleryImages  Id");
+    List<ImageInfo> imageIdList = new ArrayList<ImageInfo>();
+    imageIdList = SearchImages.searchAllImages();
+    if(!imageIdList.isEmpty())
+      isImageGalleryResult = true;
+
+    return ok(ImageGallery.render("ImageGallery", Secured.isLoggedIn(ctx()),
+        Secured.getUserInfo(ctx()), imageIdList, isImageGalleryResult));
   }
   /**
    * Returns the search page with results.

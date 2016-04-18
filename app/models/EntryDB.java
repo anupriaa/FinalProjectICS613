@@ -9,6 +9,7 @@ import play.mvc.Http;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Adds a new entry to the database. Adds the url information related to entry.
@@ -124,15 +125,19 @@ public class EntryDB extends Model {
 
 	public static void addUrlEntry(String entryType,
 			ArrayList<String> keywords, ArrayList<Double> keywordRelevance,
-                              String urlType, String url, Http.Context context) {
+                              String urlType, String url, String urlSnippet,
+															boolean ogImagePresent, String urlOGImage, Http.Context context) {
 
 		/*
 		 * for(double rel: keywordRelevance) {
 		 * System.out.println("Rele---"+rel); }
 		 */
 
-		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
-				.format(Calendar.getInstance().getTime());
+		String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString();
+		String time = new SimpleDateFormat("h:mm a").format(new Date()).toString();
+
+		System.out.println("date--"+date+"---time---"+time);
+
 
     ArrayList<Keywords> keywordList = new ArrayList<Keywords>();
     int i = 0;
@@ -142,11 +147,11 @@ public class EntryDB extends Model {
       i++;
     }
 
-    UrlInfo urlInfo = new UrlInfo(urlType, url);
+    UrlInfo urlInfo = new UrlInfo(urlType, url, urlSnippet, date,time,ogImagePresent,urlOGImage);
     String email = Secured.getUser(context);
     UserInfo userInfo = getUser(email);
     //userInfo.setImage(Application.buildCloud());
-		UrlEntry entry = new UrlEntry(entryType, timeStamp, keywordList,
+		UrlEntry entry = new UrlEntry(entryType, keywordList,
 				urlInfo, userInfo);
     //get logged in users email.
     System.out.println("email of logged in ---" + Secured.getUser(context));

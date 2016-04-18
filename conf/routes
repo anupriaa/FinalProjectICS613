@@ -8,6 +8,8 @@ GET         /Welcome                 controllers.Application.welcome()
 GET         /Faq                     controllers.Application.faq()
 GET         /AddBookmarklet          controllers.Application.addBookmarklet()
 GET         /MyLinks                 controllers.Application.myLinks()
+# To delete the selected image from database
+GET         /deleteUrl               controllers.Application.deleteUrl(id:Long)
 GET         /EnterUrl                controllers.Application.enterUrl()
 POST        /EnterUrl                controllers.Application.postEnterUrl()
 GET         /AddNote                 controllers.Application.addNote()

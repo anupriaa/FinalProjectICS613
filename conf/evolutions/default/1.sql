@@ -52,7 +52,6 @@ create table note_info (
 create table url_entry (
   entry_id                  bigint not null,
   entry_type                varchar(255),
-  timestamp                 varchar(255),
   email                     varchar(255),
   user_info_id              bigint,
   constraint pk_url_entry primary key (entry_id))
@@ -62,6 +61,11 @@ create table url_info (
   url_id                    bigint not null,
   url_type                  varchar(255),
   url                       varchar(255),
+  url_snippet               varchar(255),
+  date                      varchar(255),
+  time                      varchar(255),
+  og_image_present          boolean,
+  url_ogimage               varchar(255),
   url_entry_id              bigint,
   entry_entry_id            bigint,
   constraint pk_url_info primary key (url_id))

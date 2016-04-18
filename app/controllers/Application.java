@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.SqlUpdate;
 import models.EntryDB;
 import models.ImageEntry;
 import models.ImageInfo;
@@ -524,6 +526,26 @@ public class Application extends Controller {
         urlList = SearchEntries.searchAllUrl();
         return ok(MyLinks.render("MyLinks", Secured.isLoggedIn(ctx()),
             Secured.getUserInfo(ctx()), urlList, isSearchResult));
+  }
+
+  /**
+   * Deletes the selected url and keywords associated with it and refreshes the page.
+   * @param id Id of the selected url.
+   */
+  @Security.Authenticated(Secured.class)
+  public static Result deleteUrl(long id){
+    System.out.println("Inside delete url---" + id);
+    String query = "DELETE FROM keywords WHERE keyword_entry_id = "+id;
+    SqlUpdate down = Ebean.createSqlUpdate(query);
+    down.execute();
+    UrlInfo.find().ref(id).delete();
+    UrlEntry.find().ref(id).delete();
+    //getGalleryImageIds();
+    isSearchResult = true;
+    List<UrlInfo> urlList = new ArrayList<UrlInfo>();
+    urlList = SearchEntries.searchAllUrl();
+    return ok(MyLinks.render("MyLinks", Secured.isLoggedIn(ctx()),
+        Secured.getUserInfo(ctx()), urlList, isSearchResult));
   }
 
   /**

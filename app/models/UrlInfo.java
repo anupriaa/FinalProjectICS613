@@ -5,6 +5,8 @@ import play.db.ebean.Model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 /**
  * Entity class for url information.
@@ -16,6 +18,11 @@ public class UrlInfo extends Model {
   private long urlId;
   private String urlType = "";
   private String url = "";
+  private String urlSnippet = "";
+  private String date = "";
+  private String time ="";
+  private boolean ogImagePresent = false;
+  private String urlOGImage = "";
   private long urlEntryId;
 
   @OneToOne
@@ -25,10 +32,20 @@ public class UrlInfo extends Model {
    * Constructor to initialize the attributes.
    * @param urlType the type of url.
    * @param url the url.
+   * @param urlSnippet the snippet for the url.
+   * @param date the  date.
+   * @param time the time of the entry.
+   * @param ogImagePresent if og image is present or not for the image.
+   * @param urlOGImage the url of thr og image.
    */
-  public UrlInfo(String urlType, String url) {
+  public UrlInfo(String urlType, String url, String urlSnippet, String date, String time, boolean ogImagePresent, String urlOGImage) {
     this.urlType = urlType;
     this.url = url;
+    this.urlSnippet = urlSnippet;
+    this.date = date;
+    this.time = time;
+    this.ogImagePresent = ogImagePresent;
+    this.urlOGImage = urlOGImage;
   }
 
   /**
@@ -84,11 +101,81 @@ public class UrlInfo extends Model {
     return url;
   }
   /**
-   * Gets the url.
+   * Sets the url.
    * @param url the url.
    */
   public void setUrl(String url) {
     this.url = url;
+  }
+  /**
+   * Gets the url Snippet.
+   * @return the urlSnippet.
+   */
+  public String getUrlSnippet() {
+    return urlSnippet;
+  }
+  /**
+   * Sets the urlSnippet.
+   * @param urlSnippet the urlSnippet.
+   */
+  public void setUrlSnippet(String urlSnippet) {
+    this.urlSnippet = urlSnippet;
+  }
+  /**
+   * Gets the date.
+   * @return the date.
+   */
+  public String getDate() {
+    return date;
+  }
+  /**
+   * Sets the date.
+   * @param date the date.
+   */
+  public void setDate(String date) {
+    this.date = date;
+  }
+  /**
+   * Gets the Time .
+   * @return the Time .
+   */
+  public String getTime() {
+    return time;
+  }
+  /**
+   * Sets the Time .
+   * @param time the Time .
+   */
+  public void setTime(String time) {
+    this.time = time;
+  }
+  /**
+   * Gets the url of the OG image .
+   * @return the url of the OG image .
+   */
+  public String getUrlOGImage() {
+    return urlOGImage;
+  }
+  /**
+   * Sets the url of the OG image .
+   * @param urlOGImage the url of the OG image .
+   */
+  public void setUrlOGImage(String urlOGImage) {
+    this.urlOGImage = urlOGImage;
+  }
+  /**
+   * If og image is present for the url or not .
+   * @return the true if OG image is present.
+   */
+  public boolean GetIsOGImage() {
+    return ogImagePresent;
+  }
+  /**
+   * Sets the uogImagePresent.
+   * @param ogImagePresent the url of the OG image .
+   */
+  public void setIsOGImage(boolean ogImagePresent) {
+    this.ogImagePresent = ogImagePresent;
   }
   /**
    * Gets the entry instances.

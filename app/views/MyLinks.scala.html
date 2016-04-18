@@ -8,20 +8,44 @@
         @*<img class="homeimg" src="@routes.Assets.at("images/Taggit_wordcloud.png")">*@
         @if(isSearchResult) {
             @if(!urlInfo.isEmpty) {
-                <div class="row welcome">
-                    <div class="col-md-11 col-md-offset-1">
-                        <p>Results</p>
+                @*<hgroup class="mb20">
+                    <h1>Results</h1>
+                </hgroup>*@
+                <div class="row ">
+                    @for(urlInfo <- urlInfo) {
+                        <section class="col-xs-12 col-sm-6 col-md-12">
+                            <article class="search-result row">
+                                <div class="col-xs-12 col-sm-12 col-md-2">
+                                    @*<a href="@urlInfo.getUrl" target="_blank" title="@urlInfo.getUrl" class="thumbnail" style="width:150px;height:150px">*@
+                                        @if(urlInfo.GetIsOGImage()) {
+                                            <img class="thumbnail" src="@urlInfo.getUrlOGImage" alt="@urlInfo.getUrl" style="width:150px;height:150px">
+                                        } else {
+                                            <img class="thumbnail"  src="@routes.Assets.at("images/imgnotavailable.png")" alt="@urlInfo.getUrl" style="width:150px;height:150px">
+                                        }
+                                    @*</a>*@
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-2 mid">
+                                    <ul class="meta-search">
+                                        <li><i class="glyphicon glyphicon-calendar"></i> <span>@urlInfo.getDate</span></li>
+                                        <li><i class="glyphicon glyphicon-time"></i> <span>@urlInfo.getTime</span></li>
+                                        <li><i class="glyphicon glyphicon-tags"></i> <span>People</span></li>
+                                    </ul>
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-8 excerpet">
+                                    <h3>
+                                        <a class="wordwrap" href="@urlInfo.getUrl" target="_blank" title="">@urlInfo.getUrl()</a>
+                                        <a class="btn btn-default" href="@routes.Application.deleteUrl(urlInfo.getUrlEntryId)">
+                                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                        </a>
+                                    </h3>
+                                    <p>@urlInfo.getUrlSnippet</p>
+
+                                </div>
+                                <span class="clearfix borda"></span>
+                            </article>
+                        </section>
+                    }
                     </div>
-                    <div class="col-md-11 col-md-offset-1">
-                        <table class="table table-striped table-bordered">
-                            @for(urlInfo <- urlInfo) {
-                                <tr>
-                                    <td><a class= "resultLink" href="@urlInfo.getUrl" target="_blank">@urlInfo.getUrl()</a></td>
-                                </tr>
-                            }
-                        </table>
-                    </div>
-                </div>
             } else {
                 <div class="row welcome">
                     <br/>

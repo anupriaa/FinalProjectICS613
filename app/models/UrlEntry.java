@@ -23,8 +23,7 @@ public class UrlEntry extends Model {
   private long entryId;
   //Entry type can be either url, text or image.
   private String entryType = "";
-  //timestamp format is yyyyMMdd_HHmmss.
-  private String timestamp = "";
+
   //email of the user.
   private String email = "";
 
@@ -40,14 +39,13 @@ public class UrlEntry extends Model {
   /**
    * Constructor to initialize the entry.
    * @param entryType the type of entry.
-   * @param timestamp the time and date.
    * @param keywords List of Keyword instances.
    * @param urlInfo  Instance of entity UrlInfo.
    * @param userInfo  Instance of entity userInfo.
    */
-  public UrlEntry(String entryType, String timestamp, ArrayList<Keywords> keywords, UrlInfo urlInfo, UserInfo userInfo) {
+  public UrlEntry(String entryType, ArrayList<Keywords> keywords, UrlInfo urlInfo, UserInfo userInfo) {
     this.entryType = entryType;
-    this.timestamp = timestamp;
+
     this.keywords = keywords;
     this.urlInfo = urlInfo;
     this.userInfo = userInfo;
@@ -89,20 +87,6 @@ public class UrlEntry extends Model {
    */
   public void setEntryType(String entryType) {
     this.entryType = entryType;
-  }
-  /**
-   * Gets the Time stamp.
-   * @return the Time stamp.
-   */
-  public String getTimestamp() {
-    return timestamp;
-  }
-  /**
-   * Sets the Time stamp.
-   * @param timestamp the Time stamp.
-   */
-  public void setTimestamp(String timestamp) {
-    this.timestamp = timestamp;
   }
   /**
    * Gets the urlInfo instances.

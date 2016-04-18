@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -25,6 +26,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.parsers.*;
+import org.xml.sax.InputSource;
+import org.w3c.dom.*;
+import java.io.*;
+import org.apache.commons.lang.StringEscapeUtils;
 import com.google.gson.Gson;
 
 /**
@@ -43,7 +49,15 @@ public class ProcessUrlData extends Controller  {
   /**
    * Stores the snippet of the url.
    */
-  public static String snippet = null;
+  public static String urlSnippet = null;
+  /**
+   * Stores the og image url of the url.
+   */
+  public static String urlOGImage = null;
+  /**
+   * Is true if there is an OG image of the url.
+   */
+  public static boolean ogImagePresent = false;
   /**
    * Stores the type of entry - url or text.
    */
@@ -66,21 +80,25 @@ public class ProcessUrlData extends Controller  {
     if (isImage(url)) {
       keywords = new ArrayList<String>();
       urlType = "image";
+      urlSnippet = "Url of an Image.";
+      ogImagePresent = true;
+      urlOGImage = url;
       extractImageInfo(url);
       Collections.copy(keywords, removeWhiteSpaces(keywords));
-      EntryDB.addUrlEntry(entryType, keywords, keywordRelevance, urlType, url, ctx());
+      EntryDB.addUrlEntry(entryType, keywords, keywordRelevance, urlType, url,urlSnippet,ogImagePresent, urlOGImage, ctx());
       //keywords.clear();
     }
     else {
       keywords = new ArrayList<String>();
       urlType = "text";
-      extractSnippet(url);
+      urlSnippet = extractSnippet(url);
       //call function to extract keywords from meta data from url.
       extractMetaData(url);
+      System.out.println("urlOGImage----" + urlOGImage);
       //to extract info of main image n the page
       extractMainImageInfo(url);
       Collections.copy(keywords, removeWhiteSpaces(keywords));
-      EntryDB.addUrlEntry(entryType, keywords, keywordRelevance, urlType, url, ctx());
+      EntryDB.addUrlEntry(entryType, keywords, keywordRelevance, urlType, url, urlSnippet, ogImagePresent, urlOGImage, ctx());
       //keywords.clear();
     }
   }
@@ -89,53 +107,49 @@ public class ProcessUrlData extends Controller  {
    * Gets the snippet of the url.
    * @param url The url entered by the user.
    */
-  private static void extractSnippet(String url) {
+  private static String extractSnippet(String url) {
     System.out.println("Inside snippet");
-    String address = "http://www.google.com/search?";
-    String query ="&q=info%3"+url+
-                  "&client=google-csbe" +
-                  "&output=xml_no_dtd" +
-                  "&cx=AIzaSyATBT6bhdZ7cHfR_opxH_Yf5nMkOD-F-ug"+
-                  "&c2coff=0";
-    String charset = "UTF-8";
-    System.out.println("query---"+query);
+    String snippet =null;
+    String query = "http://www.google.com/search?q=info%3A"+url+"&c2coff=0&client=google-csbe&output=xml_no_dtd&cx=000227575832440845158:ypu8drl3ars&alt=json";
     try{
-      URL url1 = new URL(address + URLEncoder.encode(query, charset));
-      Reader reader = new InputStreamReader(url1.openStream(), charset);
-
-      givenUsingPlainJava_whenConvertingReaderIntoStringV1_thenCorrect(reader);
-
-
-      GoogleResults results = new Gson().fromJson(reader, GoogleResults.class);
-
-      int total = results.getResponseData().getResults().size();
-      System.out.println("total: "+total);
-
-      // Show title and URL of each results
-      for(int i=0; i<=total-1; i++){
-        System.out.println("Title: " + results.getResponseData().getResults().get(i).getTitle());
-        System.out.println("snippet: " + results.getResponseData().getResults().get(i).getSnippet() + "\n");
-
+        URL url1 = new URL(query);
+        HttpURLConnection conn = (HttpURLConnection) url1.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Accept", "application/json");
+        BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+        String xml = org.apache.commons.io.IOUtils.toString(br);
+        System.out.println("message----"+xml);
+        snippet = parseXMLString(xml);
+       conn.disconnect();
+      }catch(Exception e){
+        e.printStackTrace();
       }
-
-    }catch(Exception e){
-      e.printStackTrace();
-    }
-
+    return snippet;
   }
-
-  public static void givenUsingPlainJava_whenConvertingReaderIntoStringV1_thenCorrect(Reader r)
-      throws IOException {
-    int intValueOfChar;
-    String targetString = "";
-    while ((intValueOfChar = r.read()) != -1) {
-      targetString += (char) intValueOfChar;
-    }
-    System.out.println("string---"+targetString);
-  }
-
 
   /**
+   * Parses the xml string returned by google api.
+   * @param xml the xml to be parsed.
+   * @throws IOException
+   */
+  public static String parseXMLString(String xml){
+    String snippet = null;
+    try {
+      DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+      InputSource is = new InputSource();
+      is.setCharacterStream(new StringReader(xml));
+
+      org.w3c.dom.Document doc = db.parse(is);
+      snippet = doc.getElementsByTagName("S").item(0).getTextContent();
+      //System.out.println("snippet--"+StringEscapeUtils.unescapeHtml(snippet));
+      System.out.println(Jsoup.parse(snippet).text());
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+    return (Jsoup.parse(snippet).text());
+  }
+   /**
    * Extracts the meta data from html.
    * @param url The url entered by the user.
    */
@@ -166,16 +180,33 @@ public class ProcessUrlData extends Controller  {
         e.printStackTrace();
         System.out.println("CATCH 111");
       }
+      //get meta og image
+      try {
+        String ogImageUrl = doc.select("meta[property=og:image]").first().attr("content");
+        if(ogImageUrl != null && !ogImageUrl.isEmpty()) {
+           ogImagePresent = true;
+          urlOGImage = ogImageUrl;
+        } else{
+          ogImagePresent = false;
+          urlOGImage = null;
+        }
+      }
+      catch (Exception e) {
+        System.out.print("INSIDE OG image CATCH");
+        ogImagePresent = false;
+        urlOGImage = null;
+        e.printStackTrace();
+      }
       //get meta description content
       try {
         String description = doc.select("meta[name=description]").get(0).attr("content");
         System.out.println("description----" + description);
         if(description != null && !description.isEmpty()) {
-        extractKeywords(description);
+          extractKeywords(description);
         } else{
-        	descPresent = false;
+          descPresent = false;
         }
-        
+
       }
       catch (Exception e) {
         System.out.print("INSIDE DESC CATCH");
@@ -367,29 +398,5 @@ public class ProcessUrlData extends Controller  {
       keywordList.add(keyword.trim().toLowerCase());
     }
     return keywordList;
-  }
-}
-class GoogleResults{
-
-  private ResponseData responseData;
-  public ResponseData getResponseData() { return responseData; }
-  public void setResponseData(ResponseData responseData) { this.responseData = responseData; }
-  public String toString() { return "ResponseData[" + responseData + "]"; }
-
-  static class ResponseData {
-    private List<Result> results;
-    public List<Result> getResults() { return results; }
-    public void setResults(List<Result> results) { this.results = results; }
-    public String toString() { return "Results[" + results + "]"; }
-  }
-
-  static class Result {
-    private String snippet;
-    private String title;
-    public String getSnippet() { return snippet; }
-    public String getTitle() { return title; }
-    public void setSnippet(String snippet) { this.snippet = snippet; }
-    public void setTitle(String title) { this.title = title; }
-    public String toString() { return "Result[snippet:" + snippet +",title:" + title + "]"; }
   }
 }

@@ -33,13 +33,18 @@ public class SearchEntries extends Controller {
 
     ArrayList<Long> keywordIdList = new ArrayList<Long>();
     ArrayList<Long> finalIdList = new ArrayList<Long>();
+    List<Keywords> idList = new ArrayList<>();
 
-    List<Keywords> idList = Keywords.find()
-                    .select("keywordEntryId")
-                    .where()
-                    .in("keyword", queryKeywords)
-                    .findList();
-
+    for(String qk : queryKeywords){
+       List<Keywords> idListt =
+           Keywords.find()
+          .select("keywordEntryId")
+          .where()
+              //.in("keyword", queryKeywords)
+          .like("keyword", "%"+qk+"%")
+          .findList();
+      idList.addAll(idListt);
+    }
 
     for (Keywords keywords : idList) {
       keywordIdList.add(keywords.getKeywordEntryId());

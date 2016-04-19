@@ -1,5 +1,6 @@
 package models;
 
+import controllers.Secured;
 import play.db.ebean.Model;
 
 import javax.persistence.Entity;
@@ -7,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Entity class for url information.
@@ -204,5 +207,14 @@ public class UrlInfo extends Model {
    */
   public void setUrlEntryId(long urlEntryId) {
     this.urlEntryId = urlEntryId;
+  }
+  /**
+   * To get the most relevant keyword.
+   */
+  public String getMostRelevantKeyword(long urlEntryId){
+    String relevantKeyword = "";
+    List<Keywords> keywords = Keywords.find().select("keyword").where().eq("keywordEntryId", urlEntryId).orderBy("keywordRelevance").findList();
+    relevantKeyword = keywords.get(0).getKeyword();
+    return relevantKeyword;
   }
 }

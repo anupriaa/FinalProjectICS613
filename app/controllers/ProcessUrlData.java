@@ -393,10 +393,12 @@ public class ProcessUrlData extends Controller  {
    * @return the trimmed keywords.
    */
   public static ArrayList<String> removeWhiteSpaces(ArrayList<String> keywords) {
+    System.out.println("keywords before white spaces---"+keywords);
     ArrayList<String> keywordList = new ArrayList<String>();
     for (String keyword: keywords) {
-      keywordList.add(keyword.trim().toLowerCase());
+      keywordList.add(keyword.trim().toLowerCase().replace(' ','-'));
     }
+    System.out.println("keywords after white spaces---"+keywordList);
     return keywordList;
   }
 }

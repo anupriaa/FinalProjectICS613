@@ -646,11 +646,12 @@ public class Application extends Controller {
           .select("keyword")
           .where()
           .in("keywordEntryId", entryIdList)
-          //.orderBy("keywordRelevance")
+          .orderBy("keywordRelevance")
           .findList();
       for (Keywords keyword : list) {
         keywords.add(keyword.getKeyword());
       }
+      System.out.println("word keywords list----"+keywords);
       try {
         final FrequencyAnalizer frequencyAnalizer = new FrequencyAnalizer();
         //frequencyAnalizer.setWordFrequencesToReturn(20);

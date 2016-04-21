@@ -13,6 +13,8 @@ import models.EntryDB;
 import models.ImageEntry;
 import models.ImageInfo;
 import models.Keywords;
+import models.NoteEntry;
+import models.NoteInfo;
 import models.UrlEntry;
 import models.UrlInfo;
 import models.UserInfo;
@@ -38,7 +40,10 @@ import wordcloud.CollisionMode;
 import wordcloud.WordCloud;
 import wordcloud.WordFrequency;
 import wordcloud.bg.RectangleBackground;
+import wordcloud.font.CloudFont;
+import wordcloud.font.FontWeight;
 import wordcloud.font.scale.LinearFontScalar;
+import wordcloud.image.AngleGenerator;
 import wordcloud.nlp.FrequencyAnalizer;
 import wordcloud.palette.ColorPalette;
 
@@ -62,7 +67,10 @@ public class Application extends Controller {
    * false other wise.
    */
   public static boolean noEntryForUser = false;
-
+  /**
+   * The number of results for the searched keyword.
+   */
+  public static int noOfResults = 0;
   /**
    * Returns the home page.
    *
@@ -299,11 +307,13 @@ public class Application extends Controller {
     }
     else {
       String note = Form.form().bindFromRequest().get("note");
+      String noteTitle = Form.form().bindFromRequest().get("noteTitle");
       //Long userId = Long.parseLong(Form.form().bindFromRequest().get("UserId"));
       if (note != null) {
+        System.out.println("notetile---" + noteTitle);
         System.out.println("note---" + note);
         //call class that captures data and feeds it to db.
-        ProcessNoteData.processNote(note);
+        ProcessNoteData.processNote(note, noteTitle);
         return ok(AddNote.render("AddNote", Secured.isLoggedIn(ctx()), Secured.getUserInfo(ctx()), noteFormData));
       }
       else {
@@ -312,7 +322,25 @@ public class Application extends Controller {
       }
     }
   }
-  
+  /**
+   * Deletes the selected note and keywords associated with it and refreshes the page.
+   * @param id Id of the selected url.
+   */
+  @Security.Authenticated(Secured.class)
+  public static Result deleteNote(long id){
+    System.out.println("Inside delete note---" + id);
+    String query = "DELETE FROM keywords WHERE keyword_entry_id = "+id;
+    SqlUpdate down = Ebean.createSqlUpdate(query);
+    down.execute();
+    NoteInfo.find().ref(id).delete();
+    NoteEntry.find().ref(id).delete();
+    //getGalleryImageIds();
+    isSearchResult = true;
+    List<UrlInfo> urlList = new ArrayList<UrlInfo>();
+    urlList = SearchEntries.searchAllUrl();
+    return ok(MyLinks.render("MyLinks", Secured.isLoggedIn(ctx()),
+        Secured.getUserInfo(ctx()), urlList, isSearchResult));
+  }
   /**
    * Returns the upload image page.
    * @return the uploaded image form data.
@@ -409,10 +437,11 @@ public class Application extends Controller {
     }
     isSearchResult = false;
     List<UrlInfo> urlList = new ArrayList<UrlInfo>();
+    List<NoteInfo> noteList = new ArrayList<NoteInfo>();
     SearchFormData data = new SearchFormData();
     Form<SearchFormData> searchFormData = Form.form(SearchFormData.class).fill(data);
-    return ok(Search.render("Search", Secured.isLoggedIn(ctx()),
-        Secured.getUserInfo(ctx()), searchFormData, urlList, isSearchResult, noEntryForUser));
+    return ok(Search.render("Search", Secured.isLoggedIn(ctx()), Secured.getUserInfo(ctx()), searchFormData,
+        urlList,noteList, noOfResults, isSearchResult, noEntryForUser));
   }
   /**
    * Gets the image that has been uploaded to the database.
@@ -492,26 +521,31 @@ public class Application extends Controller {
     isSearchResult = true;
     noEntryForUser = false;
     List<UrlInfo> urlList = new ArrayList<UrlInfo>();
+    List<NoteInfo> noteList = new ArrayList<NoteInfo>();
 
     Form<SearchFormData> searchFormData = Form.form(SearchFormData.class).bindFromRequest();
     if (searchFormData.hasErrors()) {
-      return badRequest(Search.render("Search", Secured.isLoggedIn(ctx()),
-          Secured.getUserInfo(ctx()), searchFormData, urlList, isSearchResult, noEntryForUser));
+      return badRequest(Search.render("Search", Secured.isLoggedIn(ctx()), Secured.getUserInfo(ctx()), searchFormData,
+          urlList,noteList, noOfResults, isSearchResult, noEntryForUser));
     }
     else {
       String queryData = Form.form().bindFromRequest().get("queryData");
       System.out.println("queryData in application---" + queryData);
       if (queryData != null) {
         ArrayList<String> queryKeywords = new ArrayList<String>();
+        ArrayList<Long> keywordIdList = new ArrayList<Long>();
         Collections.addAll(queryKeywords, queryData.toLowerCase().split("\\W"));
         System.out.println("query arraylist--" + queryKeywords);
-        urlList = SearchEntries.searchUrl(queryKeywords);
+        keywordIdList = SearchEntries.searchKeywordEntryId(queryKeywords);
+        urlList = SearchEntries.searchUrl(keywordIdList);
+        noteList = SearchEntries.searchNote(keywordIdList);
+        noOfResults = urlList.size() + noteList.size();
         return ok(Search.render("Search", Secured.isLoggedIn(ctx()), Secured.getUserInfo(ctx()), searchFormData,
-            urlList, isSearchResult, noEntryForUser));
+            urlList,noteList, noOfResults, isSearchResult, noEntryForUser));
       }
       else {
-        return badRequest(Search.render("Search", Secured.isLoggedIn(ctx()), Secured.getUserInfo(ctx()),
-            searchFormData, urlList, isSearchResult, noEntryForUser));
+        return badRequest(Search.render("Search", Secured.isLoggedIn(ctx()), Secured.getUserInfo(ctx()), searchFormData,
+            urlList,noteList, noOfResults, isSearchResult, noEntryForUser));
       }
     }
   }
@@ -634,19 +668,27 @@ public class Application extends Controller {
       return image;
     }
     else {
-      List<UrlEntry> idList = UrlEntry.find()
+      List<UrlEntry> urlIdList = UrlEntry.find()
           .select("entryId")
           .where()
           .eq("email", Secured.getUser(ctx()))
           .findList();
-      for (UrlEntry entry : idList) {
+      for (UrlEntry entry : urlIdList) {
+        entryIdList.add(entry.getEntryId());
+      }
+      List<NoteEntry> noteIdList = NoteEntry.find()
+          .select("entryId")
+          .where()
+          .eq("email", Secured.getUser(ctx()))
+          .findList();
+      for (NoteEntry entry : noteIdList) {
         entryIdList.add(entry.getEntryId());
       }
       List<Keywords> list = Keywords.find()
           .select("keyword")
           .where()
           .in("keywordEntryId", entryIdList)
-          .orderBy("keywordRelevance")
+          .order().desc("keywordRelevance")
           .findList();
       for (Keywords keyword : list) {
         keywords.add(keyword.getKeyword());
@@ -660,23 +702,19 @@ public class Application extends Controller {
 
         final List<WordFrequency> wordFrequencies = frequencyAnalizer.load(keywords);
         //System.out.println("list=====00"+Arrays.toString(list.toArray()));
-        final WordCloud wordCloud = new WordCloud(400, 200, CollisionMode.PIXEL_PERFECT);
+        final WordCloud wordCloud = new WordCloud(1400, 300, CollisionMode.PIXEL_PERFECT);
         wordCloud.setPadding(2);
-      /*try {
-        wordCloud.setBackground(new PixelBoundryBackground(getInputStream("public/images/TagIt.png")));
-      }
-      catch (Exception e) {
-        System.out.println("e.p");
-        e.printStackTrace();
-      }*/
         //wordCloud.setBackground(new CircleBackground(150));
-        wordCloud.setBackground(new RectangleBackground(800, 200));
+        wordCloud.setBackground(new RectangleBackground(1400, 300));
         wordCloud.setColorPalette(new ColorPalette(new Color(0x4055F1), new Color(0x408DF1),
             new Color(0x40AAF1), new Color(0x40C5F1), new Color(0x40D3F1), new Color(0xFFFFFF)));
-        //wordCloud.setFontScalar(new LinearFontScalar(10, 40));
         //wordCloud.setFontScalar(new SqrtFontScalar(10, 40));
         //wordCloud.setColorPalette(buildRandomColorPallete(20));
+        CloudFont cf = new CloudFont("sans-serif", FontWeight.PLAIN);
+        wordCloud.setCloudFont(cf);
         wordCloud.setFontScalar(new LinearFontScalar(10, 40));
+        AngleGenerator ag = new AngleGenerator(0);
+        wordCloud.setAngleGenerator(ag);
         wordCloud.build(wordFrequencies);
         System.out.println("Before writing");
         wordCloud.writeToFile("public/images/Wordcloud.png");
@@ -736,11 +774,17 @@ public class Application extends Controller {
    */
   private static int checkNoOfEntries() {
     //Check if any entry is present or not
-    int entryCount = UrlEntry.find()
+    int urlEntryCount = UrlEntry.find()
         .select("entryId")
         .where()
         .eq("email", Secured.getUser(ctx()))
         .findRowCount();
+    int noteEntryCount = NoteEntry.find()
+        .select("entryId")
+        .where()
+        .eq("email", Secured.getUser(ctx()))
+        .findRowCount();
+    int entryCount = urlEntryCount + noteEntryCount;
     return entryCount;
   }
 }

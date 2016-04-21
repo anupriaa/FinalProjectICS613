@@ -47,16 +47,27 @@ public class ProcessNoteData extends Controller  {
    * Extracts all the information from the note and stores it in the DB.
    * @param note the note entered by the user.
    */
-  public static void processNote(String note) {
+  public static void processNote(String note, String noteTitle) {
 	  System.out.println("INSIDE PROCESSNOTE");
       keywords = new ArrayList<>();
       entryType = "text";
       //to extract keywords from the note.
-      extractKeywords(note);
+      extractKeywords(replaceSpaceWithComma(note));
       Collections.copy(keywords, ProcessUrlData.removeWhiteSpaces(keywords));
-      EntryDB.addNoteEntry(entryType, keywords, keywordRelevance,note, ctx());
+      EntryDB.addNoteEntry(entryType, keywords, keywordRelevance,note, noteTitle, ctx());
       keywords.clear();
     }
+
+  /**
+   * Removes the leading and trailing white spaces from each keyword.
+   * @param note the note entered.
+   * @return modified note.
+   */
+  public static String replaceSpaceWithComma(String note) {
+    System.out.println("note before----"+note);
+    System.out.println("note after---"+note.replace(' ', ','));
+    return note.replace(' ',',');
+  }
   
   /**
    * Extracts the keywords from the note entered.

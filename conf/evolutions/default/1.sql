@@ -44,6 +44,7 @@ create table note_entry (
 create table note_info (
   note_id                   bigint not null,
   note                      varchar(255),
+  note_title                varchar(255),
   note_entry_id             bigint,
   entry_entry_id            bigint,
   constraint pk_note_info primary key (note_id))

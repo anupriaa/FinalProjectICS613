@@ -15,6 +15,7 @@ public class NoteInfo extends Model {
   @Id
   private long noteId;
   private String note = "";
+  private String noteTitle = "";
   private long noteEntryId;
 
   @OneToOne
@@ -24,8 +25,10 @@ public class NoteInfo extends Model {
    * Constructor to initialize the attributes.
    * @param note the note entered bu the user.
    */
-  public NoteInfo(String note) {
+  public NoteInfo(String note, String noteTitle) {
+
     this.note = note;
+    this.noteTitle = noteTitle;
   }
 
   /**
@@ -60,6 +63,20 @@ public class NoteInfo extends Model {
     this.noteId = noteId;
   }
   /**
+   * Gets the note title .
+   * @return the note title.
+   */
+  public String getNoteTitle() {
+    return noteTitle;
+  }
+  /**
+   * Sets the note title.
+   * @param noteTitle the note title.
+   */
+  public void setNoteTitle(String noteTitle) {
+    this.noteTitle = noteTitle;
+  }
+  /**
    * Gets the note .
    * @return the note.
    */
@@ -67,7 +84,7 @@ public class NoteInfo extends Model {
     return note;
   }
   /**
-   * Gets the note.
+   * Sets the note.
    * @param note the note.
    */
   public void setNote(String note) {

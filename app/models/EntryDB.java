@@ -195,7 +195,7 @@ public class EntryDB extends Model {
 
 	public static void addNoteEntry(String entryType,
 			ArrayList<String> keywords, ArrayList<Double> keywordRelevance,
-			String note, Http.Context context) {
+			String note, String noteTitle, Http.Context context) {
 
 		/*
 		 * for(double rel: keywordRelevance) {
@@ -213,7 +213,7 @@ public class EntryDB extends Model {
 			i++;
 		}
 
-		NoteInfo noteInfo = new NoteInfo(note);
+		NoteInfo noteInfo = new NoteInfo(note, noteTitle);
 		String email = Secured.getUser(context);
 		UserInfo userInfo = getUser(email);
 		// userInfo.setImage(Application.buildCloud());

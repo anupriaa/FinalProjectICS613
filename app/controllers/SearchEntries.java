@@ -1,5 +1,7 @@
 package controllers;
 
+import models.NoteEntry;
+import models.NoteInfo;
 import models.UrlEntry;
 import models.Keywords;
 import models.UrlInfo;
@@ -23,26 +25,22 @@ import java.util.List;
  */
 public class SearchEntries extends Controller {
   /**
-   * Queries the database for urls related to entered keyword.
-   * @param queryKeywords the entered keywords.
-   * @return the list of urls.
+   * Queries the database for KeywordEntryIds related to entered keyword.
+   * @param queryKeywords String array the entered keywords.
+   * @return the list of KeywordEntryIds.
    */
-  public static List<UrlInfo> searchUrl(ArrayList<String> queryKeywords) {
-
-    //getSynonyms(queryKeywords);
-
+  public static ArrayList<Long> searchKeywordEntryId(ArrayList<String> queryKeywords) {
     ArrayList<Long> keywordIdList = new ArrayList<Long>();
-    ArrayList<Long> finalIdList = new ArrayList<Long>();
     List<Keywords> idList = new ArrayList<>();
 
     for(String qk : queryKeywords){
-       List<Keywords> idListt =
-           Keywords.find()
-          .select("keywordEntryId")
-          .where()
-              //.in("keyword", queryKeywords)
-          .like("keyword", "%"+qk+"%")
-          .findList();
+      List<Keywords> idListt =
+          Keywords.find()
+              .select("keywordEntryId")
+              .where()
+                  //.in("keyword", queryKeywords)
+              .like("keyword", "%"+qk+"%")
+              .findList();
       idList.addAll(idListt);
     }
 
@@ -50,6 +48,18 @@ public class SearchEntries extends Controller {
       keywordIdList.add(keywords.getKeywordEntryId());
     }
     System.out.println("keywordIdList---" + keywordIdList);
+    return keywordIdList;
+  }
+  /**
+   * Queries the database for urls related to entered keyword.
+   * @param keywordIdList the KeywordEntryIds associated with the entered keywords.
+   * @return the list of urls.
+   */
+  public static List<UrlInfo> searchUrl(ArrayList<Long> keywordIdList) {
+
+    //getSynonyms(queryKeywords);
+
+    ArrayList<Long> finalIdList = new ArrayList<Long>();
     String email = Secured.getUser(ctx());
     System.out.println("LOgged in user in search--" + email);
     List<UrlEntry> entryIdList = UrlEntry.find()
@@ -63,12 +73,29 @@ public class SearchEntries extends Controller {
     }
     System.out.println("finalIdList---" + finalIdList);
     List<UrlInfo> urlList = UrlInfo.find().select("url").where().in("urlEntryId", finalIdList).findList();
-    /*ArrayList<String> urls = new ArrayList<String>();
-    for (UrlInfo urlInfo : urlList) {
-      urls.add(urlInfo.getUrl());
-    }
-    System.out.println("urls in search----" + urls);*/
     return urlList;
+  }
+  /**
+   * Queries the database for notes related to entered keyword.
+   * @param keywordIdList the KeywordEntryIds associated with the entered keywords.
+   * @return the list of notes.
+   */
+  public static List<NoteInfo> searchNote(ArrayList<Long> keywordIdList) {
+    ArrayList<Long> finalIdList = new ArrayList<Long>();
+    String email = Secured.getUser(ctx());
+    System.out.println("LOgged in user in searchNote--" + email);
+    List<NoteEntry> entryIdList = NoteEntry.find()
+        .select("entryId")
+        .where()
+        .eq("email", email)
+        .in("entryId", keywordIdList)
+        .findList();
+    for (NoteEntry entry : entryIdList) {
+      finalIdList.add(entry.getEntryId());
+    }
+    System.out.println("finalIdList---" + finalIdList);
+    List<NoteInfo> noteList = NoteInfo.find().select("note").where().in("noteEntryId", finalIdList).findList();
+    return noteList;
   }
   /**
    * Queries the database for urls related to the logged in user.

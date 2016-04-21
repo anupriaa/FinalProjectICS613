@@ -10,6 +10,10 @@ import java.util.List;
  */
 public class NoteFormData {
   /**
+   * String to hold note title.
+   */
+  public String noteTitle = "";
+  /**
    * String to hold note.
    */
   public String note = "";
@@ -28,6 +32,9 @@ public class NoteFormData {
 
     List<ValidationError> errors = new ArrayList<>();
 
+    if (noteTitle == null || noteTitle.length() == 0) {
+      errors.add(new ValidationError("note", "Please enter the title of the note."));
+    }
     if (note == null || note.length() == 0) {
       errors.add(new ValidationError("note", "Please enter the note."));
     }

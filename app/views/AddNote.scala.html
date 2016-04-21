@@ -10,8 +10,16 @@
             id="UserId"
             value="@userInfo.getId()">
                 <!-- note -->
-            <div class="form-group">
-                <label class="col-sm-3 control-label">Add note</label>
+            <div class="note">
+                <div class="col-sm-7">
+                    <input type="text" class="form-control"
+                    name ="noteTitle"
+                    id="noteTitle"
+                    placeholder="Title">
+                </div>
+                <div class="row">
+
+                </div>
                 <div class="col-sm-7">
                         <textarea class="form-control"
                         rows="5"
@@ -21,8 +29,8 @@
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-offset-3 col-sm-7">
-                    <button id="submit" type="submit" class="btn btn-default">Submit</button>
+                <div class="col-sm-offset-6 col-sm-7">
+                    <button id="submit" type="submit" class="btn btn-default">Add Note</button>
                 </div>
             </div>
         }

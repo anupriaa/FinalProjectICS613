@@ -209,11 +209,18 @@ public class UrlInfo extends Model {
     this.urlEntryId = urlEntryId;
   }
   /**
-   * To get the most relevant keyword.
+   * To get the most relevant keyword for showing in the links.
+   * @param urlEntryId The entryId for the keyword.
+   * @return the most relevant keyword for the url.
    */
   public String getMostRelevantKeyword(long urlEntryId){
     String relevantKeyword = "";
-    List<Keywords> keywords = Keywords.find().select("keyword").where().eq("keywordEntryId", urlEntryId).orderBy("keywordRelevance").findList();
+    List<Keywords> keywords = Keywords.find()
+        .select("keyword")
+        .where()
+        .eq("keywordEntryId", urlEntryId)
+        .order().desc("keywordRelevance")
+        .findList();
     relevantKeyword = keywords.get(0).getKeyword();
     return relevantKeyword;
   }

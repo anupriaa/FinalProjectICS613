@@ -615,7 +615,7 @@ public class Application extends Controller {
         urlList = SearchEntries.searchUrl(keywordIdList);
         noteList = SearchEntries.searchNote(keywordIdList);
         fileList = SearchEntries.searchFiles(keywordIdList);
-        noOfResults = urlList.size() + noteList.size();
+        noOfResults = urlList.size() + noteList.size() + fileList.size();
         System.out.println("isSearchResult3----" + isSearchResult);
         return ok(Search.render("Search", Secured.isLoggedIn(ctx()), Secured.getUserInfo(ctx()), searchFormData,
             urlList,noteList, fileList, noOfResults, isSearchResult, noEntryForUser));

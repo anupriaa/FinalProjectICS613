@@ -1,5 +1,7 @@
 package controllers;
 
+import models.FileEntry;
+import models.FileInfo;
 import models.NoteEntry;
 import models.NoteInfo;
 import models.UrlEntry;
@@ -21,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Searches the url entries related to entered keyword.
+ * Searches the url or note entries related to entered keyword.
  */
 public class SearchEntries extends Controller {
   /**
@@ -95,6 +97,54 @@ public class SearchEntries extends Controller {
     }
     System.out.println("finalIdList---" + finalIdList);
     List<NoteInfo> noteList = NoteInfo.find().select("note").where().in("noteEntryId", finalIdList).findList();
+    return noteList;
+  }
+  /**
+   * Queries the database for files related to entered keyword.
+   * @param keywordIdList the KeywordEntryIds associated with the entered keywords.
+   * @return the list of notes.
+   */
+  public static List<FileInfo> searchFiles(ArrayList<Long> keywordIdList) {
+    ArrayList<Long> finalIdList = new ArrayList<Long>();
+    String email = Secured.getUser(ctx());
+    List<FileEntry> entryIdList = FileEntry.find()
+        .select("entryId")
+        .where()
+        .eq("email", email)
+        .in("entryId", keywordIdList)
+        .findList();
+    for (FileEntry entry : entryIdList) {
+      finalIdList.add(entry.getEntryId());
+    }
+    System.out.println("finalIdList file---" + finalIdList);
+    List<FileInfo> fileList = FileInfo.find().select("file").where().in("fileEntryId", finalIdList).findList();
+    return fileList;
+  }
+  /**
+   * Queries the database for notes related to the logged in user.
+   * @return the list of notes.
+   */
+  public static List<NoteInfo> searchAllNotes() {
+
+    ArrayList<Long> keywordIdList = new ArrayList<Long>();
+    ArrayList<Long> finalIdList = new ArrayList<Long>();
+
+    String email = Secured.getUser(ctx());
+    List<NoteEntry> entryIdList = NoteEntry.find()
+                                .select("entryId")
+                                .where()
+                                .eq("email", email)
+                                .findList();
+    for (NoteEntry entry : entryIdList) {
+      finalIdList.add(entry.getEntryId());
+    }
+
+    List<NoteInfo> noteList = NoteInfo.find()
+                            .select("note")
+                            .where()
+                            .in("noteEntryId", finalIdList)
+                            .findList();
+
     return noteList;
   }
   /**

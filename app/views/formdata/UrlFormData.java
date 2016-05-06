@@ -1,7 +1,9 @@
 package views.formdata;
 
+import jdk.nashorn.internal.runtime.regexp.RegExp;
 import play.data.validation.ValidationError;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +27,19 @@ public class UrlFormData {
    * @return Null if valid, or a List[ValidationError] if problems found.
    */
   public List<ValidationError> validate() {
-
     List<ValidationError> errors = new ArrayList<>();
+    try{
+      final URI u = new URI(url);
 
-    if (url == null || url.length() == 0) {
-      errors.add(new ValidationError("url", "Please enter the url."));
+      if(!u.isAbsolute()){
+        errors.add(new ValidationError("url", "Please enter an absolute url."));
+      }
+      if (url == null || url.length() == 0) {
+        errors.add(new ValidationError("url", "Please enter the url."));
+      }
+
+    }catch(Exception e){
+      e.printStackTrace();
     }
     return (errors.size() > 0) ? errors : null;
   }

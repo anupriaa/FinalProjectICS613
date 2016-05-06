@@ -51,10 +51,15 @@ public class SignupFormData {
 
     List<ValidationError> errors = new ArrayList<>();
 
+    if (firstName == null || firstName.length() == 0) {
+      errors.add(new ValidationError("firstName" , "Please enter your first name."));
+    }
+    if (lastName == null || lastName.length() == 0) {
+      errors.add(new ValidationError("lastName" , "Please enter your last name."));
+    }
     if (email == null || email.length() == 0) {
       errors.add(new ValidationError("email", "Please enter an email address."));
     }
-
     if (EntryDB.isUser(email)) {
       errors.add(new ValidationError("email", "Email already exists."));
     }
@@ -74,12 +79,7 @@ public class SignupFormData {
     if (!(confirmPassword.equals(password))) {
       errors.add(new ValidationError("confirmPassword", "Password and confirm password do not match"));
     }
-    if (firstName == null || firstName.length() == 0) {
-      errors.add(new ValidationError("firstName" , "Please enter your first name."));
-    }
-    if (lastName == null || lastName.length() == 0) {
-      errors.add(new ValidationError("lastName" , "Please enter your last name."));
-    }
+
 
     return (errors.size() > 0) ? errors : null;
   }

@@ -3,21 +3,25 @@
     @Main(page, isLoggedIn, userInfo) {
         <div class="container-fluid welcome">
             <div class="row">
-                <div class="col-md-12 hellotagit">
-                    <p align="center">Hello @userInfo.getFirstName,</p>
+                <div class="col-md-3"></div>
+                <div class="col-md-9 hellotagit">
+                    <p align="left">Hello @userInfo.getFirstName,</p>
                 </div>
                 <br/>
                 <div class="row welcomtagit">
-                    <div class="col-md-12">
-                        <p align="center"><b>Welcome to Taggit!</b></p>
-                    </div>
-                </div>
-                <div class="row">
                     <div class="col-md-3"></div>
                     <div class="col-md-9">
-                        <p>With Taggit you can save any website you like just with a click.</p>
-                            <p>Here are a few simple guidelines to use Taggit! effectively.</p>
+                        <p align="left"><b>Welcome to Taggit!</b></p>
                     </div>
+                </div>
+                <div class="row guidelines">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6">
+                        <p>With Taggit you can save any website you like just with a click. You can also add notes, photos, pdfs and documents.</p>
+
+                        <p>Here are a few simple guidelines to use Taggit! effectively.</p>
+                    </div>
+                    <div class="col-md-3"></div>
                 </div>
                 <div class="row guidelines">
                     <div class="col-md-3"></div>
@@ -31,11 +35,13 @@
 
                         <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
                         And later <a class="link" href="@routes.Application.search()">search</a>
-                        your added websites using keywords displayed in your personal keyword cloud.<br/>
+                        your added data using keywords displayed in your personal keyword cloud.<br/>
 
                         <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
-                        Or you can take a look at all your links by going to <a class="link" href="@routes.Application.myLinks()">
-                        My Links</a>.<br/>
+                        You can also save personal <a class="link" href="@routes.Application.addNote()">notes</a> and <a class="link" href="@routes.Application.uploadFile()">files</a> like photos, pdfs and documents.<br/>
+
+                        <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+                        Or you can take a look at all your data under the navigation tab My Data.<br/>
 
                         <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
                         Any other question, read our <a class="link" href="@routes.Application.faq()">faqs</a>.<br/>
@@ -43,7 +49,7 @@
                     <div class="col-md-3"></div>
                 </div>
                 <br/>
-                <div class="row">
+                <div class="row guidelines">
                     <div class="col-md-9 col-md-offset-3">
                         <p>So without further delay, start using Taggit.</p>
                     </div>

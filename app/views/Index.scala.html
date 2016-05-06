@@ -1,63 +1,58 @@
 @(page: String, isLoggedIn: Boolean, userInfo: UserInfo)
+@import views.html.bootstrap3._
+@import views.html.helper._
 
-    @Main(page, isLoggedIn, userInfo) {
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    @*<h1 class="homeText1">Taggit</h1>*@
-                    <img class="img-responsive homeimg12" src="@routes.Assets.at("images/TagIt.png")">
-                    <p class="subText">Life is complicated, simplify it with Taggit.</p>
-                </div>
-                <br/>
+@Main(page, isLoggedIn, userInfo) {
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                 <div class="media">
+                    <div class="media-left">
+                            <img class="media-object" src="@routes.Assets.at("images/TagIt_bks.png")">
+                    </div>
+                     <div class="media-body subText">
+                            Life is complicated, simplify it with Taggit.
+                     </div>
+                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-3"></div>
-                <div class="col-md-6">
+            <br/>
+        </div>
+        <div class="row">
+            @*<div class="col-md-3"></div>*@
+                <div class="col-md-12 ">
                     <h3 class="homeText ">
                         <p>
                             Taggit attempts to help you unclutter your mind and your life by letting you organize and catalog your day to day experiences in a searchable, sortable and manageable online medium.</p>
-                        <br/>
+
                         <p>Whether it is a website you like or thoughts rambling through your head, once you link them with Taggit, it will automatically parse, tag and contextualized that snippet of your life for future retrieval whenever you feel an itch in your brain to reminisce about a thought you can't fully recall.</p><br/>
 
-                    <p><b>4 easy steps to get going...</b></p></h3>
+                        <p><b>5 easy steps to get going...</b></p>
+                    </h3>
                     <h3 class="easySteps"> <p><span class="glyphicon glyphicon-tag" aria-hidden="true"></span> SignUp and Login</p>
-                    <p><span class="glyphicon glyphicon-tag" aria-hidden="true"></span> Add the Taggit! bookmarklet to your favourite browser.</p>
-                    <p><span class="glyphicon glyphicon-tag" aria-hidden="true"></span> Click the bookmarklet when you wish to save a website.</p>
-                    <p><span class="glyphicon glyphicon-tag" aria-hidden="true"></span> Come back here to browse through your added websites.</p></h3>
-
-
-
-
-                    <br/><br/>
+                        <p><span class="glyphicon glyphicon-tag" aria-hidden="true"></span> Add the Taggit! bookmarklet to your favourite browser.</p>
+                        <p><span class="glyphicon glyphicon-tag" aria-hidden="true"></span> Click the bookmarklet when you wish to save a website.</p>
+                        <p><span class="glyphicon glyphicon-tag" aria-hidden="true"></span> Upload photos, audio, video, pdf, documents and personal notes.</p>
+                        <p><span class="glyphicon glyphicon-tag" aria-hidden="true"></span> Look up your saved stuff using keywords from your keyword cloud.</p>
+                        <br/>
+                        <p><b>Start organizing with Taggit.</b></p>
+                    </h3>
+                    <br/>
                 </div>
-                <div class="col-md-3"></div>
-                @*<div class="col-md-3 col-md-offset-3 subText">
-                <p class="subText1">Start organizing with Taggit.</p>
-                </div>
-                <div class="col-md-3 subText">
-                <a class="btn btn-default btn-lg" href="http://www.taggit.website/signup" role="button">
-                Sign Up with email</a>
-                </div>
-                <div class="col-md-3 subText">
-                <p class="subText1">It's totally free.</p>
-                </div>*@
-            </div>
-            <div class="row">
-                <div class="col-md-8 col-md-offset-4">
-                    <p class="subText1">
-                        Start organizing with Taggit.  <a class="btn btn-default btn-lg" href="@routes.Application.signup()" role="button">
-                        Sign Up with email</a>  It's totally free. Just try it!</p>
-                </div>
-                <div class="col-md-7 col-md-offset-5">
-                    <p class="subText1">Already have an account? <a class="link" href="@routes.Application.login()">
-                        Log in now</a></p>
-                </div>
-
+            @*<div class="col-md-3"></div>*@
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <p class="subText1">
+                         It's totally free. Just try it! <a class="link" href="@routes.Application.signup()">
+                        Sign Up with email</a>
+                </p>
             </div>
         </div>
-    }
-
-
-
-
-
+        <div class="row">
+            <div class="col-md-6 ">
+                <p class="subText1">Already have an account? <a class="link" href="@routes.Application.login()">
+                        Log in now</a></p>
+            </div>
+        </div>
+    </div>
+}

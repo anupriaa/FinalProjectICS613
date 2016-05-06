@@ -16,12 +16,12 @@ import java.util.ArrayList;
  * Entity class for each entry.
  */
 @Entity
-public class ImageEntry extends Model {
+public class FileEntry extends Model {
   //private fields for all attributes.
   @Id
   @Column(name = "entry_id", nullable = false, unique = true)
   private long entryId;
-  //Entry type can be either url, text or image.
+  //Entry type can be either url, text, audio, video, document or image.
   private String entryType = "";
   //timestamp format is yyyyMMdd_HHmmss.
   private String timestamp = "";
@@ -29,7 +29,7 @@ public class ImageEntry extends Model {
   private String email = "";
 
   @OneToOne(mappedBy = "entry", cascade = CascadeType.PERSIST)
-  private ImageInfo imageInfo;
+  private FileInfo fileInfo;
 
   @OneToMany(mappedBy = "entry", cascade = CascadeType.PERSIST)
   private ArrayList<Keywords> keywords;
@@ -40,17 +40,14 @@ public class ImageEntry extends Model {
   /**
    * Constructor to initialize the entry.
    * @param entryType the type of entry.
-   * @param timestamp the time and date.
    * @param keywords List of Keyword instances.
-   * @param imageInfo  Instance of entity ImageInfo.
+   * @param fileInfo  Instance of entity FileInfo.
    * @param userInfo  Instance of entity UserInfo.
    */
-  public ImageEntry(String entryType, String timestamp, 
-		  ArrayList<Keywords> keywords, ImageInfo imageInfo, UserInfo userInfo) {
+  public FileEntry(String entryType, ArrayList<Keywords> keywords, FileInfo fileInfo, UserInfo userInfo) {
     this.entryType = entryType;
-    this.timestamp = timestamp;
     this.keywords = keywords;
-    this.imageInfo = imageInfo;
+    this.fileInfo = fileInfo;
     this.userInfo = userInfo;
   }
 
@@ -58,8 +55,8 @@ public class ImageEntry extends Model {
    * The EBean ORM finder method for database queries.
    * @return The finder method.
    */
-  public static Finder<Long, ImageEntry> find() {
-    return new Finder<Long, ImageEntry>(Long.class, ImageEntry.class);
+  public static Finder<Long, FileEntry> find() {
+    return new Finder<Long, FileEntry>(Long.class, FileEntry.class);
   }
 
   /**
@@ -106,18 +103,18 @@ public class ImageEntry extends Model {
     this.timestamp = timestamp;
   }
   /**
-   * Gets the imageInfo instances.
-   * @return the imageInfo.
+   * Gets the fileInfo instances.
+   * @return the fileInfo.
    */
-  public ImageInfo getImageInfo() {
-    return imageInfo;
+  public FileInfo getFileInfo() {
+    return fileInfo;
   }
   /**
-   * Sets the imageInfo instances.
-   * @param imageInfo the imageInfo.
+   * Sets the fileInfo instances.
+   * @param fileInfo the fileInfo.
    */
-  public void setImageInfo(ImageInfo imageInfo) {
-    this.imageInfo = imageInfo;
+  public void setFileInfo(FileInfo fileInfo) {
+    this.fileInfo = fileInfo;
   }
   /**
    * Gets the keyword instance list.

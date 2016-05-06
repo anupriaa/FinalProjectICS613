@@ -1,0 +1,54 @@
+@(page: String, isLoggedIn: Boolean, userInfo: UserInfo,fileInfo : List[FileInfo], isFileGalleryResult: Boolean )
+
+@import views.html.bootstrap3._
+@import views.html.helper._
+
+@Main(page, isLoggedIn, userInfo) {
+    <div class="container">
+        @if(isFileGalleryResult) {
+            @if(!fileInfo.isEmpty) {
+                <div class="row">
+                    @for(fileInfo <- fileInfo) {
+                        <section class="col-xs-12 col-sm-6 col-md-12">
+                            <article class="search-result row">
+                                <div class="col-xs-12 col-sm-12 col-md-2 mid">
+                                    <ul class="meta-search">
+                                        <li><i class="glyphicon glyphicon-calendar"></i> <span>@fileInfo.getDate</span></li>
+                                        <li><i class="glyphicon glyphicon-time"></i> <span>@fileInfo.getTime</span></li>
+                                        <li><i class="glyphicon glyphicon-trash"></i><span><a href="@routes.Application.deleteFiles(fileInfo.getFileId,fileInfo.getFileType)">Delete File
+                                        </a></span></li>
+                                        @* <li><i class="glyphicon glyphicon-tags"></i> <span>@noteInfo.getMostRelevantKeyword(noteInfo.getNoteEntryId)</span></li>*@
+                                    </ul>
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-8 excerpet">
+                                    <h3>
+                                        <p><a class= "resultLink" href="@routes.Application.getGalleryFiles(fileInfo.getFileId())" target="_blank">@fileInfo.getFileName()</a>
+                                        </p>
+                                    </h3>
+                                </div>
+                                <span class="clearfix borda"></span>
+                            </article>
+                        </section>
+                    }
+                </div>
+            }
+        }else {
+            <div class="row welcome">
+                <br/>
+                <div class="col-md-11 col-md-offset-1">
+                    <p>@userInfo.getFirstName, <br/>You have not added any audios yet.</p>
+                </div>
+                <div class="col-md-11 col-md-offset-1">
+                    <p>Get started now</p>
+                </div>
+                <div class="col-md-10 col-md-offset-1">
+                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+                    Add images by going to <a class="link" href="@routes.Application.uploadFile()">Upload File</a><br/>
+
+                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+                    And then come and take a look at your images here.
+                </div>
+            </div>
+            }
+    </div>
+}

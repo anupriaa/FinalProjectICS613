@@ -30,14 +30,14 @@
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-6 col-sm-7">
-                    <button id="submit" type="submit" class="btn btn-default">Add Note</button>
+                    <button id="submit" type="submit" class="btn btn-default">Add </button>
                 </div>
             </div>
         }
         @if(contactForm.hasErrors){
             <div class="row welcome">
                 <br/>
-                <div class="col-md-11 col-md-offset-1 alert-alert error text-danger">
+                <div class="col-md-11 alert-alert error text-danger">
                     <p>@{contactForm("note").error.map {error => error.messages}}</p>
                 </div>
             </div>

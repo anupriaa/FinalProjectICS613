@@ -197,13 +197,11 @@ public class EntryDB extends Model {
 			ArrayList<String> keywords, ArrayList<Double> keywordRelevance,
 			String note, String noteTitle, Http.Context context) {
 
-		/*
-		 * for(double rel: keywordRelevance) {
-		 * System.out.println("Rele---"+rel); }
-		 */
+		String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString();
+		String time = new SimpleDateFormat("h:mm a").format(new Date()).toString();
 
-		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
-				.format(Calendar.getInstance().getTime());
+		/*String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
+				.format(Calendar.getInstance().getTime());*/
 
 		ArrayList<Keywords> keywordList = new ArrayList<Keywords>();
 		int i = 0;
@@ -213,11 +211,11 @@ public class EntryDB extends Model {
 			i++;
 		}
 
-		NoteInfo noteInfo = new NoteInfo(note, noteTitle);
+		NoteInfo noteInfo = new NoteInfo(note, noteTitle,date, time);
 		String email = Secured.getUser(context);
 		UserInfo userInfo = getUser(email);
 		// userInfo.setImage(Application.buildCloud());
-		NoteEntry entry = new NoteEntry(entryType, timeStamp, keywordList,
+		NoteEntry entry = new NoteEntry(entryType, keywordList,
 				noteInfo, userInfo);
 		// get logged in users email.
 		System.out.println("email of logged in ---" + Secured.getUser(context));
@@ -244,31 +242,28 @@ public class EntryDB extends Model {
 	}
 
 	/**
-	 * Adds entry to the database.
+	 * Adds file entry to the database.
 	 * 
 	 * @param entryType
 	 *            the type of entry.
 	 * @param keywords
 	 *            the keywords associated with the entry.
-	 * @param image
+	 * @param file
 	 *            the image.
 	 * @param keywordRelevance
 	 *            the relevance of each keyword.
 	 * @param context
 	 *            the Http context.
+	 * @param fileName the name of the file.
+	 * @param fileType the extension of the file.
 	 */
 
-	public static void addImageEntry(String entryType,
+	public static void addFileEntry(String entryType,
 			ArrayList<String> keywords, ArrayList<Double> keywordRelevance,
-			byte[] image, String imageName, Http.Context context) {
+			byte[] file, String fileName, String fileType, Http.Context context) {
 
-		/*
-		 * for(double rel: keywordRelevance) {
-		 * System.out.println("Rele---"+rel); }
-		 */
-
-		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
-				.format(Calendar.getInstance().getTime());
+		String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString();
+		String time = new SimpleDateFormat("h:mm a").format(new Date()).toString();
 
 		ArrayList<Keywords> keywordList = new ArrayList<Keywords>();
 		int i = 0;
@@ -278,35 +273,34 @@ public class EntryDB extends Model {
 			i++;
 		}
 
-		ImageInfo imageInfo = new ImageInfo(image, imageName);
+		FileInfo fileInfo = new FileInfo(file, fileName, fileType, date, time);
 		String email = Secured.getUser(context);
 		UserInfo userInfo = getUser(email);
 		// userInfo.setImage(Application.buildCloud());
-		ImageEntry entry = new ImageEntry(entryType, timeStamp, keywordList,
-				imageInfo, userInfo);
+		FileEntry entry = new FileEntry(entryType, keywordList,
+				fileInfo, userInfo);
 		// get logged in users email.
 		System.out.println("image email of logged in ---" + Secured.getUser(context));
 		entry.setEmail(email);
 
-		entry.setImageInfo(imageInfo);
+		entry.setFileInfo(fileInfo);
 		entry.setUserInfo(userInfo);
-		imageInfo.setEntry(entry);
+		fileInfo.setEntry(entry);
 
 		entry.setKeywords(keywordList);
 
 		entry.save();
-		imageInfo.setImageEntryId(entry.getEntryId());
-		imageInfo.save();
+		fileInfo.setFileEntryId(entry.getEntryId());
+		fileInfo.save();
 		i = 0;
 		for (String keywordString : keywords) {
 			Keywords keywords1 = new Keywords(keywordString,
 					keywordRelevance.get(i));
-			keywords1.setImageEntry(entry);
+			keywords1.setFileEntry(entry);
 			keywords1.setKeywordEntryId(entry.getEntryId());
 			keywords1.save();
 			i++;
 		}
 	}
 
-	
 }

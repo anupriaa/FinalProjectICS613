@@ -3,8 +3,8 @@
 @Main(page, isLoggedIn, userInfo) {
     <div class="container">
      <div class="row welcome">
-      <div class="md-col-4"></div>
-        <div class="md-col-4">
+      <div class="md-col-3"></div>
+        <div class="md-col-6">
          <h1>Add the Bookmarklet</h1>
         <p class="bookmarkletText">Our bookmarklet lets you quickly add links from any web page. <br/>Just make sure your bookmarks toolbar is visible, and then drag the below link. </p>
        <a class="bookmarkletLinkt" href='javascript: (function(e, t) {
@@ -24,7 +24,8 @@
         if (r) {
         return
         }
-        var i = "https://www.taggit.website/Bookmarklet?",
+        /*var i = "https://www.taggit.website/Bookmarklet?",*/
+        var i = "http://www.localhost:9000/Bookmarklet?",
         s = n.createElement("iframe");
         s.id = t;
         s.src = i + "url=" +
@@ -50,9 +51,9 @@
         e[o](u, a, false)
         }, 1)
         })(window)'> Tag it!</a>
-       <p class="bookmarkletText">Done! Now just click 'Tag it!'’ any time you want to add a page.</p>
+       <p class="bookmarkletText"><br/>Done! Now just click 'Tag it!'’ any time you want to add a page.</p>
         </div>
-      <div class="md-col-4"></div>
+      <div class="md-col-3"></div>
      </div>
         </div>
 }

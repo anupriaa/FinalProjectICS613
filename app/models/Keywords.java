@@ -23,7 +23,8 @@ public class Keywords extends Model {
   private NoteEntry noteEntry;
 
   @ManyToOne
-  private ImageEntry imageEntry;
+  private FileEntry fileEntry;
+
 
   /**
    * Constructor to initialize attributes.
@@ -52,14 +53,14 @@ public class Keywords extends Model {
   }
 
   /**
-   * Adds the image entries.
+   * Adds the file entries.
    * @param entry the entry list.
    */
-  public void addEntry(ImageEntry entry) {
-    this.imageEntry = entry;
+  public void addEntry(FileEntry entry) {
+    this.fileEntry = entry;
   }
 
-  /**
+   /**
    * The EBean ORM finder method for database queries.
    * @return The finder method.
    */
@@ -116,20 +117,21 @@ public class Keywords extends Model {
   }
 
   /**
-  * Gets the image entry instance for this keyword.
+  * Gets the file entry instance for this keyword.
   * @return the entry.
   */
- public ImageEntry getImageEntry() {
-   return imageEntry;
+ public FileEntry getFileEntry() {
+   return fileEntry;
  }
 
  /**
-  * Sets the entry instance.
+  * Sets the file entry instance.
   * @param entry the entry instance.
   */
- public void setImageEntry(ImageEntry entry) {
-   this.imageEntry = entry;
+ public void setFileEntry(FileEntry entry) {
+   this.fileEntry = entry;
  }
+
  
   /**
    * Gets the keywords.

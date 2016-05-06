@@ -12,11 +12,11 @@ import java.util.List;
 /**
  * Backing class for the enter ImageUpload form.
  */
-public class ImageUploadFormData {
+public class FileUploadFormData {
   /**
    * File to hold ImageUpload.
    */
-  public FilePart uploadedImage ;
+  public FilePart uploadedFile ;
   /**
    * String to hold image name.
    */
@@ -25,14 +25,14 @@ public class ImageUploadFormData {
   /** 
    * Required for form instantiation. 
    * */
-  public ImageUploadFormData(FilePart uploadedImage) {
+  public FileUploadFormData(FilePart uploadedImage) {
 	  System.out.println("33333");
-	  this.uploadedImage = uploadedImage;
+	  this.uploadedFile = uploadedImage;
   }
   /** 
    * Required for form instantiation. 
    * */
-  public ImageUploadFormData() {
+  public FileUploadFormData() {
 	  System.out.println("44444");
   }
 
@@ -47,11 +47,11 @@ public class ImageUploadFormData {
 
     List<ValidationError> errors = new ArrayList<>();
    /* play.mvc.Http.MultipartFormData data = request().body().asMultipartFormData();
-    uploadedImage = data.getFile("uploadedImage");*/
+    uploadedFile = data.getFile("uploadedFile");*/
 
-    if (uploadedImage == null) {
+    if (uploadedFile == null) {
     	System.out.println("INSIDE IMAGE ERROR");
-      errors.add(new ValidationError("uploadedImage", "Please enter the image to upload."));
+      errors.add(new ValidationError("uploadedFile", "Please enter the file to upload."));
     }
     return (errors.size() > 0) ? errors : null;
   }

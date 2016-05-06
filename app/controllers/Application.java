@@ -10,8 +10,8 @@ import java.util.List;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.SqlUpdate;
 import models.EntryDB;
-import models.ImageEntry;
-import models.ImageInfo;
+import models.FileEntry;
+import models.FileInfo;
 import models.Keywords;
 import models.NoteEntry;
 import models.NoteInfo;
@@ -19,6 +19,7 @@ import models.UrlEntry;
 import models.UrlInfo;
 import models.UserInfo;
 
+import org.apache.commons.io.FilenameUtils;
 import org.mcavallo.opencloud.Cloud;
 import org.mcavallo.opencloud.Tag;
 
@@ -29,7 +30,7 @@ import play.mvc.Result;
 import play.mvc.Security;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
-import views.formdata.ImageUploadFormData;
+import views.formdata.FileUploadFormData;
 import views.formdata.LoginFormData;
 import views.formdata.NoteFormData;
 import views.formdata.SearchFormData;
@@ -56,7 +57,7 @@ public class Application extends Controller {
    * True if there are any search results.
    * false other wise.
    */
-   public static boolean isImageGalleryResult = false; 
+   public static boolean isFileGalleryResult = false;
   /**
    * True if there are any search results.
    * false other wise.
@@ -72,12 +73,16 @@ public class Application extends Controller {
    */
   public static int noOfResults = 0;
   /**
+   * The type of the file being stored (image, audio, video or document).
+   */
+  public static String fileType = "";
+  /**
    * Returns the home page.
    *
    * @return The resulting home page.
    */
   public static Result index() {
-    session().clear();
+    //session().clear();
     //List<Tag> tag = cloud();
     //cloud();
     return ok(Index.render("Home", Secured.isLoggedIn(ctx()), Secured.getUserInfo(ctx())));
@@ -298,10 +303,8 @@ public class Application extends Controller {
    */
   @Security.Authenticated(Secured.class)
   public static Result postAddNote() {
-    System.out.print("INSIDE POST Addnote");
     Form<NoteFormData> noteFormData = Form.form(NoteFormData.class).bindFromRequest();
     if (noteFormData.hasErrors()) {
-      System.out.print("INSIDE URL HAS ERRORS");
       return badRequest(AddNote.render("AddNote", Secured.isLoggedIn(ctx()),
           Secured.getUserInfo(ctx()), noteFormData));
     }
@@ -310,8 +313,6 @@ public class Application extends Controller {
       String noteTitle = Form.form().bindFromRequest().get("noteTitle");
       //Long userId = Long.parseLong(Form.form().bindFromRequest().get("UserId"));
       if (note != null) {
-        System.out.println("notetile---" + noteTitle);
-        System.out.println("note---" + note);
         //call class that captures data and feeds it to db.
         ProcessNoteData.processNote(note, noteTitle);
         return ok(AddNote.render("AddNote", Secured.isLoggedIn(ctx()), Secured.getUserInfo(ctx()), noteFormData));
@@ -334,37 +335,70 @@ public class Application extends Controller {
     down.execute();
     NoteInfo.find().ref(id).delete();
     NoteEntry.find().ref(id).delete();
-    //getGalleryImageIds();
+    //getGalleryFileIds();
     isSearchResult = true;
-    List<UrlInfo> urlList = new ArrayList<UrlInfo>();
-    urlList = SearchEntries.searchAllUrl();
-    return ok(MyLinks.render("MyLinks", Secured.isLoggedIn(ctx()),
-        Secured.getUserInfo(ctx()), urlList, isSearchResult));
+    List<NoteInfo> noteList = new ArrayList<NoteInfo>();
+    noteList = SearchEntries.searchAllNotes();
+    return ok(MyNotes.render("MyNotes", Secured.isLoggedIn(ctx()),
+        Secured.getUserInfo(ctx()), noteList, isSearchResult));
+  }
+
+  /**
+   * Returns all the notes added by the user.
+   * @return the searchFormData and the note list.
+   */
+  @Security.Authenticated(Secured.class)
+  public static Result myNotes() {
+    isSearchResult = true;
+    List<NoteInfo> noteList = new ArrayList<NoteInfo>();
+    noteList = SearchEntries.searchAllNotes();
+    return ok(MyNotes.render("MyNotes", Secured.isLoggedIn(ctx()),
+        Secured.getUserInfo(ctx()), noteList, isSearchResult));
+  }
+  /**
+   * multipart form to upload large files.
+   * @return null
+   */
+  public static class UploadFileForm {
+    public FilePart uploadedFile;
+
+    public String validate() {
+      MultipartFormData data = request().body().asMultipartFormData();
+      uploadedFile = data.getFile("uploadedFile");
+
+      if (uploadedFile == null) {
+        //flash("error", "Missing file");
+        return "File is missing.";
+
+      }
+
+      return null;
+    }
   }
   /**
    * Returns the upload image page.
    * @return the uploaded image form data.
    */
   @Security.Authenticated(Secured.class)
-  public static Result uploadImage() {
+  public static Result uploadFile() {
     System.out.print("INSIDE uploadimage");
-    ImageUploadFormData data = new ImageUploadFormData();
+    FileUploadFormData data = new FileUploadFormData();
     MultipartFormData mdata = request().body().asMultipartFormData();
     try{
-    if(mdata.getFile("image") != null) {
+    if(mdata.getFile("file") != null) {
     	System.out.println("11111");
-    FilePart image = mdata.getFile("image");
-    	data = new ImageUploadFormData(image);
+    FilePart file = mdata.getFile("file");
+    	data = new FileUploadFormData(file);
     } 
     }catch(Exception e){
     	System.out.println("2222");
     	//data = new ImageUploadFormData();
     }
-    UploadImageForm df = new UploadImageForm();
-    Form<UploadImageForm> imageUploadFormData = Form.form(UploadImageForm.class).fill(df);
+    UploadFileForm df = new UploadFileForm();
+    Form<UploadFileForm> fileUploadFormData = Form.form(UploadFileForm.class).fill(df);
     //Form<ImageUploadFormData> imageUploadFormData = Form.form(ImageUploadFormData.class).fill(data);
     //flash("success", "File uploaded.");
-    return ok(UploadImage.render("UploadImage", Secured.isLoggedIn(ctx()), Secured.getUserInfo(ctx()), imageUploadFormData));
+    return ok(UploadFile.render("UploadFile", Secured.isLoggedIn(ctx()), Secured.getUserInfo(ctx()), fileUploadFormData));
   }
   
   /**
@@ -372,51 +406,141 @@ public class Application extends Controller {
    * @return the form data.
    */
   @Security.Authenticated(Secured.class)
-  public static Result postUploadImage() {
-    System.out.print("INSIDE POST upload omage");
+  public static Result postUploadFile() {
+    System.out.print("INSIDE POST upload file");
     /*MultipartFormData mdata = request().body().asMultipartFormData();
     ImageUploadFormData data = new ImageUploadFormData(mdata.getFile("image"));*/
-    Form<UploadImageForm> uploadImageFormData = Form.form(UploadImageForm.class).bindFromRequest();
+    Form<UploadFileForm> uploadFileFormData = Form.form(UploadFileForm.class).bindFromRequest();
     //Form<ImageUploadFormData> uploadImageFormData = Form.form(ImageUploadFormData.class).bindFromRequest();
-    if (uploadImageFormData.hasErrors()) {
+    if (uploadFileFormData.hasErrors()) {
       System.out.print("INSIDE IMAGE HAS ERRORS");
-      return badRequest(UploadImage.render("UploadImage", Secured.isLoggedIn(ctx()),
-          Secured.getUserInfo(ctx()), uploadImageFormData));
+
+      return badRequest(UploadFile.render("UploadFile", Secured.isLoggedIn(ctx()),
+          Secured.getUserInfo(ctx()), uploadFileFormData));
     }
     else {
-      File image = uploadImageFormData.get().uploadedImage.getFile();
-      String imageName = uploadImageFormData.get().uploadedImage.getFilename();
-      String imageContent = uploadImageFormData.get().uploadedImage.getContentType();
-      System.out.println("imagecontent--"+imageContent);
-      System.out.println("image name---"+imageName);
+      File file = uploadFileFormData.get().uploadedFile.getFile();
+      String fileName = uploadFileFormData.get().uploadedFile.getFilename();
+      String fileExtension = FilenameUtils.getExtension(fileName);
+      System.out.println("fileType--"+fileExtension);
+      if(fileExtension.equalsIgnoreCase("jpeg") || fileExtension.equalsIgnoreCase("jpg") || fileExtension.equalsIgnoreCase("png") || fileExtension.equalsIgnoreCase("bmp")){
+        fileType ="image";
+      }else if(fileExtension.equalsIgnoreCase("doc") || fileExtension.equalsIgnoreCase("docx")
+          || fileExtension.equalsIgnoreCase("pdf") || fileExtension.equalsIgnoreCase("txt")){
+        fileType = "document";
+      }else if(fileExtension.equalsIgnoreCase("mp3") || fileExtension.equalsIgnoreCase("wav")){
+        fileType = "audio";
+      }else if(fileExtension.equalsIgnoreCase("mp4") || fileExtension.equalsIgnoreCase("flv")
+          || fileExtension.equalsIgnoreCase("3gp") || fileExtension.equalsIgnoreCase("mpg") || fileExtension.equalsIgnoreCase("mpeg")){
+        fileType = "video";
+      }else{
+        fileType = "unknown";
+      }
+      String fileContent = uploadFileFormData.get().uploadedFile.getContentType();
+      System.out.println("imagecontent--"+fileContent);
+
+      System.out.println("image name---"+fileName);
       //Long userId = Long.parseLong(Form.form().bindFromRequest().get("UserId"));
-      if (image != null) {
+      if (file != null) {
         //System.out.println("note---" + note);
         //call class that captures data and feeds it to db.
-        ProcessImageData.processImage(image, imageName);
-        return ok(UploadImage.render("UploadImage", Secured.isLoggedIn(ctx()), 
-        		Secured.getUserInfo(ctx()), uploadImageFormData));
+        ProcessFileData.processFile(file, fileName, fileType);
+        return ok(UploadFile.render("UploadFile", Secured.isLoggedIn(ctx()),
+        		Secured.getUserInfo(ctx()), uploadFileFormData));
       }
       else {
-        return badRequest(UploadImage.render("UploadImage", Secured.isLoggedIn(ctx()),
-            Secured.getUserInfo(ctx()), uploadImageFormData));
+        return badRequest(UploadFile.render("UploadFile", Secured.isLoggedIn(ctx()),
+            Secured.getUserInfo(ctx()), uploadFileFormData));
       }
     }
   }
-  public static class UploadImageForm {
-      public FilePart uploadedImage;
-      
-      public String validate() {
-          MultipartFormData data = request().body().asMultipartFormData();
-          uploadedImage = data.getFile("uploadedImage");
-          
-          if (uploadedImage == null) {
-              return "File is missing.";
-          }
-  
-          return null;
-      }
-  } 
+
+  /**
+   * Returns the gallery page with results.
+   * @return the gallery FormData and the image list.
+   */
+  @Security.Authenticated(Secured.class)
+  public static Result getGalleryFileIds(String fileType) {
+    System.out.println("Inside getGallleryImages  Id");
+    List<FileInfo> fileIdList = new ArrayList<FileInfo>();
+    fileIdList = SearchFiles.searchAllFiles(fileType);
+
+    if(!fileIdList.isEmpty()){
+      isFileGalleryResult = true;
+    }else{
+      isFileGalleryResult = false;
+    }
+    if(fileType.equalsIgnoreCase("image")){
+      return ok(ImageGallery.render("ImageGallery", Secured.isLoggedIn(ctx()),
+          Secured.getUserInfo(ctx()), fileIdList, isFileGalleryResult));
+    }else if(fileType.equalsIgnoreCase("video")){
+      return ok(VideoGallery.render("VideoGallery", Secured.isLoggedIn(ctx()),
+          Secured.getUserInfo(ctx()), fileIdList, isFileGalleryResult));
+    }else if(fileType.equalsIgnoreCase("audio")){
+      return ok(AudioGallery.render("AudioGallery", Secured.isLoggedIn(ctx()),
+          Secured.getUserInfo(ctx()), fileIdList, isFileGalleryResult));
+    }else if(fileType.equalsIgnoreCase("document")){
+      return ok(DocumentGallery.render("DocumentGallery", Secured.isLoggedIn(ctx()),
+          Secured.getUserInfo(ctx()), fileIdList, isFileGalleryResult));
+    }
+    System.out.println("no ifs");
+    return ok(AllGallery.render("AllGallery", Secured.isLoggedIn(ctx()),
+        Secured.getUserInfo(ctx()), fileIdList, isFileGalleryResult));
+  }
+
+  /**
+   * Gets the images that have been uploaded to the database.
+   * @param id The id of the image to be fetched.
+   * @return The image.
+   */
+  public static Result getGalleryFiles(long id) {
+    FileInfo file = FileInfo.find()
+        .select("file")
+        .where()
+        .in("fileId", id)
+        .findUnique();
+    if (file == null) {
+      throw new RuntimeException("Could not find the image with associated user.");
+    }
+
+    return ok(file.getFile()).as("image");
+  }
+  /**
+   * deletes the selected image and refreshes the page.
+   * @param id Id of the selected image.
+   */
+  @Security.Authenticated(Secured.class)
+  public static Result deleteFiles(long id, String fileType){
+    System.out.println("Inside delete---" + id);
+    FileInfo.find().ref(id).delete();
+    FileEntry.find().ref(id).delete();
+    //getGalleryFileIds();
+    System.out.println("Inside getGallleryImages  Id");
+    List<FileInfo> fileIdList = new ArrayList<FileInfo>();
+    fileIdList = SearchFiles.searchAllFiles(fileType);
+    if(!fileIdList.isEmpty()) {
+      isFileGalleryResult = true;
+    }else{
+      isFileGalleryResult = false;
+    }
+
+    if(fileType.equalsIgnoreCase("image")){
+      return ok(ImageGallery.render("ImageGallery", Secured.isLoggedIn(ctx()),
+          Secured.getUserInfo(ctx()), fileIdList, isFileGalleryResult));
+    }else if(fileType.equalsIgnoreCase("video")){
+      return ok(VideoGallery.render("VideoGallery", Secured.isLoggedIn(ctx()),
+          Secured.getUserInfo(ctx()), fileIdList, isFileGalleryResult));
+    }else if(fileType.equalsIgnoreCase("audio")){
+      return ok(AudioGallery.render("AudioGallery", Secured.isLoggedIn(ctx()),
+          Secured.getUserInfo(ctx()), fileIdList, isFileGalleryResult));
+    }else if(fileType.equalsIgnoreCase("document")){
+      return ok(DocumentGallery.render("DocumentGallery", Secured.isLoggedIn(ctx()),
+          Secured.getUserInfo(ctx()), fileIdList, isFileGalleryResult));
+    }
+    System.out.println("no ifs");
+    return ok(AllGallery.render("AllGallery", Secured.isLoggedIn(ctx()),
+        Secured.getUserInfo(ctx()), fileIdList, isFileGalleryResult));
+  }
   /**
    * Returns the search page.
    * @return the searchFormData and an empty urlList
@@ -438,13 +562,15 @@ public class Application extends Controller {
     isSearchResult = false;
     List<UrlInfo> urlList = new ArrayList<UrlInfo>();
     List<NoteInfo> noteList = new ArrayList<NoteInfo>();
+    List<FileInfo> fileList = new ArrayList<FileInfo>();
     SearchFormData data = new SearchFormData();
     Form<SearchFormData> searchFormData = Form.form(SearchFormData.class).fill(data);
+    System.out.println("isSearchResult1----" + isSearchResult);
     return ok(Search.render("Search", Secured.isLoggedIn(ctx()), Secured.getUserInfo(ctx()), searchFormData,
-        urlList,noteList, noOfResults, isSearchResult, noEntryForUser));
+        urlList,noteList, fileList, noOfResults, isSearchResult, noEntryForUser));
   }
   /**
-   * Gets the image that has been uploaded to the database.
+   * Gets the keyword cloud that has been uploaded to the database.
    * @return The image.
    */
   public static Result getImage() {
@@ -459,59 +585,6 @@ public class Application extends Controller {
 
     return ok(user.getImage()).as("image");
   }
-
-  /**
-   * Returns the gallery page with results.
-   * @return the gallery FormData and the image list.
-   */
-  @Security.Authenticated(Secured.class)
-  public static Result getGalleryImageIds() {
-	  System.out.println("Inside getGallleryImages  Id");
-	  List<ImageInfo> imageIdList = new ArrayList<ImageInfo>();
-    imageIdList = SearchImages.searchAllImages();
-      if(!imageIdList.isEmpty())
-    	  isImageGalleryResult = true;
-    	
-      return ok(ImageGallery.render("ImageGallery", Secured.isLoggedIn(ctx()),
-            Secured.getUserInfo(ctx()), imageIdList, isImageGalleryResult));
-  }
-
-  /**
-   * Gets the images that have been uploaded to the database.
-   * @param id The id of the image to be fetched.
-   * @return The image.
-   */
-  public static Result getGalleryImages(long id) {
-    ImageInfo images = ImageInfo.find()
-                      .select("image")
-                      .where()
-                      .in("imageId", id)
-                      .findUnique();
-    if (images == null) {
-      throw new RuntimeException("Could not find the image with associated user.");
-    }
-
-    return ok(images.getImage()).as("image");
-  }
-  /**
-   * deletes the selected image and refreshes the page.
-   * @param id Id of the selected image.
-   */
-  @Security.Authenticated(Secured.class)
-  public static Result deleteImages(long id){
-    System.out.println("Inside delete---" + id);
-    ImageInfo.find().ref(id).delete();
-    ImageEntry.find().ref(id).delete();
-    //getGalleryImageIds();
-    System.out.println("Inside getGallleryImages  Id");
-    List<ImageInfo> imageIdList = new ArrayList<ImageInfo>();
-    imageIdList = SearchImages.searchAllImages();
-    if(!imageIdList.isEmpty())
-      isImageGalleryResult = true;
-
-    return ok(ImageGallery.render("ImageGallery", Secured.isLoggedIn(ctx()),
-        Secured.getUserInfo(ctx()), imageIdList, isImageGalleryResult));
-  }
   /**
    * Returns the search page with results.
    * @return the searchFormData and the url list.
@@ -522,11 +595,13 @@ public class Application extends Controller {
     noEntryForUser = false;
     List<UrlInfo> urlList = new ArrayList<UrlInfo>();
     List<NoteInfo> noteList = new ArrayList<NoteInfo>();
+    List<FileInfo> fileList = new ArrayList<FileInfo>();
 
     Form<SearchFormData> searchFormData = Form.form(SearchFormData.class).bindFromRequest();
     if (searchFormData.hasErrors()) {
+      System.out.println("isSearchResult2----" + isSearchResult);
       return badRequest(Search.render("Search", Secured.isLoggedIn(ctx()), Secured.getUserInfo(ctx()), searchFormData,
-          urlList,noteList, noOfResults, isSearchResult, noEntryForUser));
+          urlList,noteList, fileList, noOfResults, isSearchResult, noEntryForUser));
     }
     else {
       String queryData = Form.form().bindFromRequest().get("queryData");
@@ -539,13 +614,16 @@ public class Application extends Controller {
         keywordIdList = SearchEntries.searchKeywordEntryId(queryKeywords);
         urlList = SearchEntries.searchUrl(keywordIdList);
         noteList = SearchEntries.searchNote(keywordIdList);
+        fileList = SearchEntries.searchFiles(keywordIdList);
         noOfResults = urlList.size() + noteList.size();
+        System.out.println("isSearchResult3----" + isSearchResult);
         return ok(Search.render("Search", Secured.isLoggedIn(ctx()), Secured.getUserInfo(ctx()), searchFormData,
-            urlList,noteList, noOfResults, isSearchResult, noEntryForUser));
+            urlList,noteList, fileList, noOfResults, isSearchResult, noEntryForUser));
       }
       else {
+        System.out.println("isSearchResult4----" + isSearchResult);
         return badRequest(Search.render("Search", Secured.isLoggedIn(ctx()), Secured.getUserInfo(ctx()), searchFormData,
-            urlList,noteList, noOfResults, isSearchResult, noEntryForUser));
+            urlList,noteList, fileList, noOfResults, isSearchResult, noEntryForUser));
       }
     }
   }
@@ -561,7 +639,6 @@ public class Application extends Controller {
         return ok(MyLinks.render("MyLinks", Secured.isLoggedIn(ctx()),
             Secured.getUserInfo(ctx()), urlList, isSearchResult));
   }
-
   /**
    * Deletes the selected url and keywords associated with it and refreshes the page.
    * @param id Id of the selected url.
@@ -574,7 +651,7 @@ public class Application extends Controller {
     down.execute();
     UrlInfo.find().ref(id).delete();
     UrlEntry.find().ref(id).delete();
-    //getGalleryImageIds();
+    //getGalleryFileIds();
     isSearchResult = true;
     List<UrlInfo> urlList = new ArrayList<UrlInfo>();
     urlList = SearchEntries.searchAllUrl();
@@ -684,6 +761,14 @@ public class Application extends Controller {
       for (NoteEntry entry : noteIdList) {
         entryIdList.add(entry.getEntryId());
       }
+      List<FileEntry> fileIdList = FileEntry.find()
+          .select("entryId")
+          .where()
+          .eq("email", Secured.getUser(ctx()))
+          .findList();
+      for (FileEntry entry : fileIdList) {
+        entryIdList.add(entry.getEntryId());
+      }
       List<Keywords> list = Keywords.find()
           .select("keyword")
           .where()
@@ -784,7 +869,12 @@ public class Application extends Controller {
         .where()
         .eq("email", Secured.getUser(ctx()))
         .findRowCount();
-    int entryCount = urlEntryCount + noteEntryCount;
+    int fileEntryCount = FileEntry.find()
+        .select("entryId")
+        .where()
+        .eq("email", Secured.getUser(ctx()))
+        .findRowCount();
+    int entryCount = urlEntryCount + noteEntryCount + fileEntryCount;
     return entryCount;
   }
 }

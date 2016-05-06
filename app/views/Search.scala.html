@@ -1,11 +1,11 @@
 @(page: String, isLoggedIn: Boolean, userInfo: UserInfo,contactForm: Form[views.formdata.SearchFormData],
-        urlInfo : List[UrlInfo], noteInfo : List[NoteInfo], noOfResults: Integer, isSearchResult: Boolean, noEntryForUser: Boolean )
+        urlInfo : List[UrlInfo], noteInfo : List[NoteInfo], fileInfo : List[FileInfo], noOfResults: Integer, isSearchResult: Boolean, noEntryForUser: Boolean )
 
 @import views.html.bootstrap3._
 @import views.html.helper._
 
 @Main(page, isLoggedIn, userInfo) {
-    <div class="container">
+    <div class="container" xmlns="http://www.w3.org/1999/html">
         @*<img class="homeimg" src="@routes.Assets.at("images/Taggit_wordcloud.png")">*@
 
 
@@ -13,22 +13,24 @@
             <div class="row welcome">
                 <br/>
                 <div class="col-md-11 col-md-offset-1">
-                    <p>@userInfo.getFirstName, you have not added any entries yet.</p>
+                    <p>@userInfo.getFirstName,<br/> You have not added anything yet.</p>
                 </div>
                 <div class="col-md-11 col-md-offset-1">
-                    <p>Get started now:</p>
+                    <p>Get started now</p>
                 </div>
-                <div class="col-md-10 col-md-offset-2">
+                <div class="col-md-10 col-md-offset-1">
                     <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
-                    Add the <a class="link" href="@routes.Application.addBookmarklet()">bookmarklet</a> to your bookmarks.
-                </div>
-                <div class="col-md-10 col-md-offset-2">
+                    Add the <a class="link" href="@routes.Application.addBookmarklet()">bookmarklet</a> to your bookmarks.<br/>
+
                     <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
-                    Just click on the bookmarklet, When you want to save a website.
-                </div>
-                <div class="col-md-10 col-md-offset-2">
+                    Just click on the bookmarklet, When you want to save a website. <br/>
+
                     <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
-                    And later <a class="link" href="@routes.Application.search()">search</a> your added websites using keywords displayed above in your personal keyword cloud.
+                    Or you can also save personal notes by going to <a class="link" href="@routes.Application.addNote()">
+                    Add Note</a>.<br/>
+
+                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+                    And later <a class="link" href="@routes.Application.search()">search</a> your added websites and notes using keywords displayed in your personal keyword cloud.
                 </div>
             </div>
         } else {
@@ -67,13 +69,14 @@
                     <p>@{contactForm("queryData").error.map {error => error.messages}}</p>
                 </div>
             </div>
+
         }else {
             @if(isSearchResult) {
-                @if(!urlInfo.isEmpty || !noteInfo.isEmpty) {
+                @if(!urlInfo.isEmpty || !noteInfo.isEmpty || !fileInfo.isEmpty) {
                     <div class="col-sm-offset-0 col-sm-12">
                         <hgroup class="mb20">
                             <h1>Results</h1>
-                            <h2 class="lead"><strong class="text-danger">@noOfResults</strong> results found.</h2>
+                            <h2 class="lead"><strong class="text-danger1">@noOfResults</strong> results found.</h2>
                         </hgroup>
                     </div>
                     <div class="row">
@@ -91,26 +94,64 @@
                                 </article>
                             </section>
                         }
-                            @for(noteInfo <- noteInfo) {
-                                <section class="col-xs-12 col-sm-6 col-md-12">
-                                    <article class="search-result row">
-                                        <div class="col-xs-12 col-sm-12 col-md-12 excerpet">
+                        @for(noteInfo <- noteInfo) {
+                            <section class="col-xs-12 col-sm-6 col-md-12">
+                                <article class="search-result row">
+                                    <div class="col-xs-12 col-sm-12 col-md-12 excerpet">
+                                        <h3>
+                                            <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>
+                                            <span>@noteInfo.getNoteTitle</span>
+                                        </h3>
+                                        <p>@noteInfo.getNote</p>
+                                    </div>
+                                    <span class="clearfix borda"></span>
+                                </article>
+                            </section>
+                        }
+                        @for(fileInfo <- fileInfo) {
+                            <section class="col-xs-12 col-sm-6 col-md-12">
+                                <article class="search-result row">
+                                    <div class="col-xs-12 col-sm-12 col-md-12 excerpet">
+                                    @if(fileInfo.getFileType == "image"){
+                                        <h3>
+                                            <span class="glyphicon glyphicon-camera" aria-hidden="true"></span>
+                                            <a class= "resultLink" href="@routes.Application.getGalleryFiles(fileInfo.getFileId())" target="_blank">
+                                                <img src="@routes.Application.getGalleryFiles(fileInfo.getFileId())" alt="@fileInfo.getFileName()" style="width:150px;height:150px"></a>
+                                            @*<p class="wordwrap">@fileInfo.getFileName()</p>*@
+                                        </h3>
+                                    } else {
+                                        @if(fileInfo.getFileType == "document") {
                                             <h3>
-                                                <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>
-                                                <span>@noteInfo.getNoteTitle</span>
+                                                <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                                                <span><a class= "resultLink" href="@routes.Application.getGalleryFiles(fileInfo.getFileId())" target="_blank">@fileInfo.getFileName()</a></span>
                                             </h3>
-                                            <p>@noteInfo.getNote</p>
-                                        </div>
-                                        <span class="clearfix borda"></span>
-                                    </article>
-                                </section>
+                                        } else {
+                                            @if(fileInfo.getFileType == "video") {
+                                                <h3>
+                                                    <span class="glyphicon glyphicon-film" aria-hidden="true"></span>
+                                                    <span><a class= "resultLink" href="@routes.Application.getGalleryFiles(fileInfo.getFileId())" target="_blank">@fileInfo.getFileName()</a></span>
+                                                </h3>
+                                            } else {
+                                                @if(fileInfo.getFileType == "audio") {
+                                                    <h3>
+                                                        <span class="glyphicon glyphicon-headphones" aria-hidden="true"></span>
+                                                        <span><a class= "resultLink" href="@routes.Application.getGalleryFiles(fileInfo.getFileId())" target="_blank">@fileInfo.getFileName()</a></span>
+                                                    </h3>
+                                                }
+                                            }
+                                        }
+                                    }
+                                    </div>
+                                    <span class="clearfix borda"></span>
+                                </article>
+                            </section>
                         }
                     </div>
                 } else {
                     <div class="row welcome">
                         <br/>
-                        <div class="col-md-11 col-md-offset-1">
-                            <p>Sorry, no entry associated with the entered keyword was found.</p>
+                        <div class="col-md-11 col-md-offset-1 alert-alert error text-danger">
+                                <p><br/><br/>Sorry, no data associated with the entered keyword was found.</p>
                         </div>
                     </div>
                 }

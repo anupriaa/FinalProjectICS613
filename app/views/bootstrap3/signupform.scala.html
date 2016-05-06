@@ -66,6 +66,11 @@ Clients should set the "error" key in flash scope to provide feedback on errors.
                             type="password">
                         </div>
                         <input class="btn btn-default" type="submit" value="Signup">
+                        <div>
+                            <small class="text-muted">
+                               <br/> * All fields are required.
+                            </small>
+                        </div>
                     </fieldset>
                 }
                 <br/>
@@ -73,7 +78,7 @@ Clients should set the "error" key in flash scope to provide feedback on errors.
                 @if(flash.size() > 0){
                     <div class="alert-alert error text-danger">
                     @for((key, value) <- flash){
-                        <strong>Error : </strong> @value<br />
+                        <strong>@value<br /> </strong>
                     }
                     </div>
                 }

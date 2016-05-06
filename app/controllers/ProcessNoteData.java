@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Handles the html data from the entered URL.
+ * Handles the html data from the entered note.
  */
 public class ProcessNoteData extends Controller  {
 
@@ -52,7 +52,13 @@ public class ProcessNoteData extends Controller  {
       keywords = new ArrayList<>();
       entryType = "text";
       //to extract keywords from the note.
-      extractKeywords(replaceSpaceWithComma(note));
+      if(note.length() > 10){
+        extractKeywords(note);
+      }else if(note.contains(",")){
+        extractKeywords(note);
+      }else{
+        extractKeywords(replaceSpaceWithComma(note));
+      }
       Collections.copy(keywords, ProcessUrlData.removeWhiteSpaces(keywords));
       EntryDB.addNoteEntry(entryType, keywords, keywordRelevance,note, noteTitle, ctx());
       keywords.clear();
@@ -64,8 +70,6 @@ public class ProcessNoteData extends Controller  {
    * @return modified note.
    */
   public static String replaceSpaceWithComma(String note) {
-    System.out.println("note before----"+note);
-    System.out.println("note after---"+note.replace(' ', ','));
     return note.replace(' ',',');
   }
   

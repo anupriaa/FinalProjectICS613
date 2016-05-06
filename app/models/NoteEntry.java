@@ -40,14 +40,12 @@ public class NoteEntry extends Model {
   /**
    * Constructor to initialize the entry.
    * @param entryType the type of entry.
-   * @param timestamp the time and date.
    * @param keywords List of Keyword instances.
    * @param noteInfo  Instance of entity NoteInfo.
    * @param userInfo  Instance of entity userInfo.
    */
-  public NoteEntry(String entryType, String timestamp, ArrayList<Keywords> keywords, NoteInfo noteInfo, UserInfo userInfo) {
+  public NoteEntry(String entryType, ArrayList<Keywords> keywords, NoteInfo noteInfo, UserInfo userInfo) {
     this.entryType = entryType;
-    this.timestamp = timestamp;
     this.keywords = keywords;
     this.noteInfo = noteInfo;
     this.userInfo = userInfo;

@@ -29,14 +29,16 @@
                                         <li><i class="glyphicon glyphicon-calendar"></i> <span>@urlInfo.getDate</span></li>
                                         <li><i class="glyphicon glyphicon-time"></i> <span>@urlInfo.getTime</span></li>
                                         <li><i class="glyphicon glyphicon-tags"></i> <span>@urlInfo.getMostRelevantKeyword(urlInfo.getUrlEntryId)</span></li>
+                                        <li><i class="glyphicon glyphicon-trash"></i><span><a href="@routes.Application.deleteUrl(urlInfo.getUrlEntryId)">Delete URL
+                                        </a></span></li>
                                     </ul>
                                 </div>
                                 <div class="col-xs-12 col-sm-12 col-md-8 excerpet">
                                     <h3>
                                         <a class="wordwrap" href="@urlInfo.getUrl" target="_blank" title="">@urlInfo.getUrl()</a>
-                                        <a class="btn btn-default" href="@routes.Application.deleteUrl(urlInfo.getUrlEntryId)">
+                                        @*<a class="btn btn-default" href="@routes.Application.deleteUrl(urlInfo.getUrlEntryId)">
                                             <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                                        </a>
+                                        </a>*@
                                     </h3>
                                     <p>@urlInfo.getUrlSnippet</p>
 
@@ -50,20 +52,18 @@
                 <div class="row welcome">
                     <br/>
                     <div class="col-md-11 col-md-offset-1">
-                        <p>@userInfo.getFirstName, you have not added any entries yet.</p>
+                        <p>@userInfo.getFirstName,<br/> You have not added any entries yet.</p>
                     </div>
                     <div class="col-md-11 col-md-offset-1">
-                        <p>Get started now:</p>
+                        <p>Get started now</p>
                     </div>
-                    <div class="col-md-10 col-md-offset-2">
+                    <div class="col-md-10 col-md-offset-1">
                         <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
-                        Add the <a class="link" href="@routes.Application.addBookmarklet()">bookmarklet</a> to your bookmarks.
-                    </div>
-                    <div class="col-md-10 col-md-offset-2">
+                        Add the <a class="link" href="@routes.Application.addBookmarklet()">bookmarklet</a> to your bookmarks.<br/>
+
                         <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
-                        Just click on the bookmarklet, When you want to save a website.
-                    </div>
-                    <div class="col-md-10 col-md-offset-2">
+                        Just click on the bookmarklet, When you want to save a website. <br/>
+
                         <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
                         And then come and take a look at your links here.
                     </div>

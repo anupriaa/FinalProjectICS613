@@ -3,44 +3,50 @@
 # ~~~~
 
 # Home page
-GET         /                        controllers.Application.index()
-GET         /Welcome                 controllers.Application.welcome()
-GET         /Faq                     controllers.Application.faq()
-GET         /AddBookmarklet          controllers.Application.addBookmarklet()
-GET         /MyLinks                 controllers.Application.myLinks()
+GET         /                       controllers.Application.index()
+GET         /Welcome                controllers.Application.welcome()
+GET         /Faq                    controllers.Application.faq()
+GET         /AddBookmarklet         controllers.Application.addBookmarklet()
+GET         /MyLinks                controllers.Application.myLinks()
+GET         /MyNotes                controllers.Application.myNotes()
 # To delete the selected image from database
-GET         /deleteUrl               controllers.Application.deleteUrl(id:Long)
-GET         /EnterUrl                controllers.Application.enterUrl()
-POST        /EnterUrl                controllers.Application.postEnterUrl()
-GET         /AddNote                 controllers.Application.addNote()
-POST        /AddNote                 controllers.Application.postAddNote()
-GET         /deleteNote              controllers.Application.deleteNote(id:Long)
-GET         /UploadImage             controllers.Application.uploadImage()
-POST        /UploadImage             controllers.Application.postUploadImage()
-GET         /ImageGallery            controllers.Application.getGalleryImageIds()
+GET         /deleteUrl              controllers.Application.deleteUrl(id:Long)
+GET         /EnterUrl               controllers.Application.enterUrl()
+POST        /EnterUrl               controllers.Application.postEnterUrl()
+GET         /AddNote                controllers.Application.addNote()
+POST        /AddNote                controllers.Application.postAddNote()
+GET         /deleteNote             controllers.Application.deleteNote(id:Long)
+GET         /UploadFile             controllers.Application.uploadFile()
+POST        /UploadFile             controllers.Application.postUploadFile()
+GET         /ImageGallery           controllers.Application.getGalleryFileIds(fileType:String)
+GET         /AudioGallery           controllers.Application.getGalleryFileIds(fileType:String)
+GET         /VideoGallery           controllers.Application.getGalleryFileIds(fileType:String)
+GET         /DocumentGallery        controllers.Application.getGalleryFileIds(fileType:String)
+GET         /AllGallery             controllers.Application.getGalleryFileIds(fileType:String)
+
 # To get the images for gallery from database
-GET         /getGalleryImages        controllers.Application.getGalleryImages(id:Long)
-# To delete the selected image from database
-GET         /deleteImages            controllers.Application.deleteImages(id:Long)
-GET         /Search                  controllers.Application.search()
+GET         /getGalleryFiles        controllers.Application.getGalleryFiles(id:Long)
+# To delete the selected files from database
+GET         /deleteFiles            controllers.Application.deleteFiles(id:Long,fileType:String)
+GET         /Search                 controllers.Application.search()
 # To get the image from database
-GET         /getImage                controllers.Application.getImage()
-POST        /Search                  controllers.Application.searchResult()
+GET         /getImage               controllers.Application.getImage()
+POST        /Search                 controllers.Application.searchResult()
 #POST       /Home                controllers.Application.postEntry()
 # Login and authentication workflow
-GET         /login                   controllers.Application.login(msg: String?= "")
-POST        /login                   controllers.Application.postLogin()
-GET         /logout                  controllers.Application.logout()
+GET         /login                  controllers.Application.login(msg: String?= "")
+POST        /login                  controllers.Application.postLogin()
+GET         /logout                 controllers.Application.logout()
 
-GET         /signup                  controllers.Application.signup()
-POST        /signup                  controllers.Application.postSignup()
+GET         /signup                 controllers.Application.signup()
+POST        /signup                 controllers.Application.postSignup()
 
-GET         /Bookmarklet             controllers.Application.enterUrlTest()
+GET         /Bookmarklet            controllers.Application.enterUrlTest()
 
 # Javascript routing
 #GET         /assets/javascripts/routes        controllers.Application.jsRoutes()
 
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file            controllers.Assets.at(path="/public", file)
+GET         /assets/*file           controllers.Assets.at(path="/public", file)
 

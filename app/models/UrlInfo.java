@@ -215,13 +215,18 @@ public class UrlInfo extends Model {
    */
   public String getMostRelevantKeyword(long urlEntryId){
     String relevantKeyword = "";
-    List<Keywords> keywords = Keywords.find()
-        .select("keyword")
-        .where()
-        .eq("keywordEntryId", urlEntryId)
-        .order().desc("keywordRelevance")
-        .findList();
-    relevantKeyword = keywords.get(0).getKeyword();
+    try{
+      List<Keywords> keywords = Keywords.find()
+          .select("keyword")
+          .where()
+          .eq("keywordEntryId", urlEntryId)
+          .order().desc("keywordRelevance")
+          .findList();
+      relevantKeyword = keywords.get(0).getKeyword();
+    }catch(Exception e){
+      e.printStackTrace();
+      relevantKeyword = " ";
+    }
     return relevantKeyword;
   }
 }

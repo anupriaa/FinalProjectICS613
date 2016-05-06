@@ -1,36 +1,46 @@
-@(page: String, isLoggedIn: Boolean, userInfo: UserInfo,imageInfo : List[ImageInfo], isImageGalleryResult: Boolean )
+@(page: String, isLoggedIn: Boolean, userInfo: UserInfo,fileInfo : List[FileInfo], isFileGalleryResult: Boolean )
 
 @import views.html.bootstrap3._
 @import views.html.helper._
 
 @Main(page, isLoggedIn, userInfo) {
     <div class="container">
-        @if(isImageGalleryResult) {
-            @if(!imageInfo.isEmpty) {
+        @if(isFileGalleryResult) {
+            @if(!fileInfo.isEmpty) {
                 <div class="row welcome">
-                    @for(imageInfo <- imageInfo) {
-                       <div class="col-md-4 ">
-                          <a class= "resultLink" href="@routes.Application.getGalleryImages(imageInfo.getImageId())" target="_blank">
-                            <img src="@routes.Application.getGalleryImages(imageInfo.getImageId())" alt="@imageInfo.getImageName()" style="width:150px;height:150px">
-                            <p>@imageInfo.getImageName()
-                            <!--button type="button" class="btn btn-default" aria-label="Delete"-->
-                                <a class="btn btn-default" href="@routes.Application.deleteImages(imageInfo.getImageId)">
-                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    @for(fileInfo <- fileInfo) {
+                        <div class="col-md-4 ">
+                            <a class= "resultLink" href="@routes.Application.getGalleryFiles(fileInfo.getFileId())" target="_blank">
+                                <img src="@routes.Application.getGalleryFiles(fileInfo.getFileId())" alt="@fileInfo.getFileName()" style="width:150px;height:150px"></a>
+                                <p class="wordwrap">@fileInfo.getFileName()
+                                    <!--button type="button" class="btn btn-default" aria-label="Delete"-->
+                                <a class="" href="@routes.Application.deleteFiles(fileInfo.getFileId,fileInfo.getFileType)">
+                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                                 </a>
-                            <!--/button-->
-                            </p>
-                          </a>
-                       </div>
+                                               <!--/button-->
+                                </p>
+
+                        </div>
                     }
                 </div>
-            } else {
-                <div class="row welcome">
-                    <br/>
-                    <div class="col-md-11 col-md-offset-1">
-                        <p>@userInfo.getFirstName, you have not added any images yet.</p>
-                    </div>
-                </div>
             }
-        }
+        }else {
+            <div class="row welcome">
+                <br/>
+                <div class="col-md-11 col-md-offset-1">
+                    <p>@userInfo.getFirstName, <br/>You have not added any images yet.</p>
+                </div>
+                <div class="col-md-11 col-md-offset-1">
+                    <p>Get started now</p>
+                </div>
+                <div class="col-md-10 col-md-offset-1">
+                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+                    Add images by going to <a class="link" href="@routes.Application.uploadFile()">Upload File</a><br/>
+
+                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+                    And then come and take a look at your images here.
+                </div>
+            </div>
+            }
     </div>
 }

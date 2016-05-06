@@ -512,6 +512,9 @@ public class Application extends Controller {
   @Security.Authenticated(Secured.class)
   public static Result deleteFiles(long id, String fileType){
     System.out.println("Inside delete---" + id);
+    String query = "DELETE FROM keywords WHERE keyword_entry_id = "+id;
+    SqlUpdate down = Ebean.createSqlUpdate(query);
+    down.execute();
     FileInfo.find().ref(id).delete();
     FileEntry.find().ref(id).delete();
     //getGalleryFileIds();

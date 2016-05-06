@@ -55,12 +55,12 @@
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Data <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li class="@("active".when(page == "MyLinks"))"><a href="@routes.Application.myLinks()">Urls</a></li>
+                                    <li class="@("active".when(page == "MyLinks"))"><a href="@routes.Application.myLinks()">URLs</a></li>
                                     <li class="@("active".when(page == "MyNotes"))"><a href="@routes.Application.myNotes()">Notes</a></li>
                                     <li class="@("active".when(page == "ImageGallery"))"><a href="@routes.Application.getGalleryFileIds("image")">Images</a></li>
                                     <li class="@("active".when(page == "AudioGallery"))"><a href="@routes.Application.getGalleryFileIds("audio")">Audios</a></li>
                                     <li class="@("active".when(page == "VideoGallery"))"><a href="@routes.Application.getGalleryFileIds("video")">Videos</a></li>
-                                    <li class="@("active".when(page == "DocumentGallery"))"><a href="@routes.Application.getGalleryFileIds("document")">Documents</a></li>
+                                    <li class="@("active".when(page == "DocumentGallery"))"><a href="@routes.Application.getGalleryFileIds("document")">Documents and Pdfs</a></li>
                                     <li class="@("active".when(page == "AllGallery"))"><a href="@routes.Application.getGalleryFileIds("all")">All files</a></li>
                                 </ul>
                             </li>
